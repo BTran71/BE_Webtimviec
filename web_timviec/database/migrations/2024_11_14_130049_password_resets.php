@@ -13,18 +13,21 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('workplace', function (Blueprint $table) {
-            $table->id();
-            $table->string('city');
+        Schema::create('password_resets', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('email')->unquie();
+            $table->string('token');
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('workplace');
+        //
     }
 };

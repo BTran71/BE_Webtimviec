@@ -18,17 +18,16 @@ return new class extends Migration
             $table->string('fullname');
             $table->string('email')->unique();
             $table->string('image')->nullable();
-            $table->integer('phone_number',10);
-            $table->bit('gender');
+            $table->integer('phone_number');
+            $table->tinyInteger('gender')->default(0);
             $table->text('skills');
             $table->dateTime('day_ofbirth');
             $table->float('salary');
             $table->string('experience');
             $table->string('address');
-            $table->string('address');
-            $table->string('address');
             $table->unsignedBigInteger('candidate_id'); 
             $table->foreign('candidate_id')->references('id')->on('candidate_account')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 

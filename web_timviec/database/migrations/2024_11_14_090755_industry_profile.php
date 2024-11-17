@@ -13,18 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('workplace', function (Blueprint $table) {
-            $table->id();
-            $table->string('city');
-            $table->timestamps();
-        });
+        //
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('workplace');
+        //
     }
 };

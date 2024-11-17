@@ -15,15 +15,16 @@ return new class extends Migration
     {
         Schema::create('employer_account', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('company_name');
             $table->string('email')->unique();
             $table->string('password');
             $table->string('image')->nullable();
-            $table->integer('phone_number',10);
+            $table->integer('phone_number');
             $table->string('address');
             $table->text('discription')->nullable();
-            $table->bit('isLock');
+            $table->tinyInteger('is_Lock')->default(1);
             $table->string('company_size');
+            $table->timestamps();
         });
     }
 

@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'employer' => [
+            'driver' => 'session',
+            'provider' => 'employers',  // provider cho đối tượng employer
+        ],
     ],
 
     /*
@@ -62,8 +66,12 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => App\Models\Candidate::class,
         ],
+        'employers' =>[
+            'driver' => 'eloquent',
+            'model' => App\Models\Employer::class,
+        ]
 
         // 'users' => [
         //     'driver' => 'database',

@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('work_experience', function (Blueprint $table) {
+        Schema::create('reference_information', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->string('company_name');
-            $table->string('job_position');
-            $table->dateTime('start_time');
-            $table->dateTime('end_time');
-            $table->text('description');
+            $table->integer('phone_number');
+            $table->string('position');
             $table->unsignedBigInteger('profile_id'); 
             $table->foreign('profile_id')->references('id')->on('profile')->onDelete('cascade');
             $table->timestamps();
@@ -28,9 +27,11 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('work_experience');
+        Schema::dropIfExists('reference_information');
     }
 };
