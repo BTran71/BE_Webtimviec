@@ -35,11 +35,13 @@ Route::post('/registerCandidate', [AuthController::class,'registerCandidate']);
 Route::post('/loginEmployer', [AuthController::class,'loginEmployer']);
 Route::post('/registerEmployer', [AuthController::class,'registerEmployer']);
 Route::post('/loginAdmin', [AuthController::class,'loginAdmin']);
+Route::post('/registerAdmin', [AuthController::class,'registerAdmin']);
 Route::post('/logout',[AuthController::class,'logout']);
 
 //api lĩnh vực
 Route::get('/getIndustry',[IndustryController::class,'getAllIndustry']);
 Route::post('/addIndustry',[IndustryController::class,'addIndustry']);
-Route::put('updateIndustry/{id}',[IndustryController::class,'updateIndustry']);
-Route::delete('deleteIndustry/{id}',[IndustryController::class,'deleteIndustry']);
+Route::put('/updateIndustry/{id}',[IndustryController::class,'updateIndustry']);
+Route::delete('/deleteIndustry/{id}',[IndustryController::class,'deleteIndustry']);
+Route::post('industry/search',[IndustryController::class,'searchIndustry']);
 

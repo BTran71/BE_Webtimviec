@@ -4,18 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Auth\Authenticatable;
 
 
-class Employer extends Model
+class Employer extends Model implements AuthenticatableContract
 {
     use HasFactory;
     use HasApiTokens, HasFactory, Notifiable;
+    use Authenticatable;
     protected $table='employer_account';
     /**
      * The attributes that are mass assignable.
@@ -37,9 +39,9 @@ class Employer extends Model
      *
      * @var array<int, string>
      */
-    // protected $hidden = [
-    //     'password',
-    // ];
+    protected $hidden = [
+        'password',
+    ];
 
     /**
      * The attributes that should be cast.

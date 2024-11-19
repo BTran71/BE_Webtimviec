@@ -87,31 +87,58 @@ class AuthController extends Controller
     }
     //login admin
     public function loginAdmin(Request $request){
-        $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
-            $admin = Auth::admin();
+        $admin = Admin::where('email', $request->email)->first();
+        // Thực hiện xác thực bằng Auth
+        if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            // Lấy thông tin người dùng đã đăng nhập
+            $user = Auth::guard('admin')->user();
+
             $responseData = [
                 'message' => 'Đăng nhập thành công',
                 'user' => [
-                    'id' =>$admin->id,
-                    'email' => $admin->email,
+                    'id' => $user->id,
+                    'email' => $user->email,
                 ]
             ];
             return response()->json($responseData, 200);
         } else {
-            return response()->json(['error' => 'Tài khoản mật khẩu không chính xác'], 401);
+            return response()->json(['error' => 'Thông tin đăng nhập không chính xác'], 401);
+        }
+    }
+    public function registerAdmin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:admin',
+            'password' => 'required|string|min:6|',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+    
+        try {
+            $candidate = Admin::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+    
+            return response()->json(['message' => 'Đăng ký thành công'],200);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->error()], 500);
         }
     }
     //login ứng viên
     public function loginCandidate(Request $request){
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-            $employer = Auth::user();
+            $candidate = Auth::user();
             $responseData = [
                 'message' => 'Đăng nhập thành công',
                 'user' => [
-                    'id' =>$employer->id,
-                    'email' => $employer->email,
+                    'id' =>$candidate->id,
+                    'email' => $candidate->email,
                 ]
             ];
             return response()->json($responseData, 200);
@@ -149,25 +176,32 @@ class AuthController extends Controller
     }
     //login nhà tuyển dụng
     public function loginEmployer(Request $request){
-        $credentials = $request->only('email', 'password');
-        $employer=Employer::where('email', $request->email)->first();
-        if (!$employer || $employer->is_Lock==0) {
-            return response()->json(['error'=>'Tài khoản đã bị khóa'], 401);
+        $employer = Employer::where('email', $request->email)->first();
+        // Kiểm tra tài khoản có tồn tại và có bị khóa không
+        if (!$employer || $employer->is_Lock == 0) {
+            return response()->json(['error' => 'Tài khoản đã bị khóa'], 401);
         }
-        else if (Auth::attempt($credentials)) {
+
+        // Thực hiện xác thực bằng Auth
+        if (Auth::guard('employer')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            // Lấy thông tin người dùng đã đăng nhập
             $employer = Auth::guard('employer')->user();
+
             $responseData = [
                 'message' => 'Đăng nhập thành công',
                 'user' => [
-                    'id' =>$employer->id,
+                    'id' => $employer->id,
                     'email' => $employer->email,
+                    'name' => $employer->company_name, // Nếu muốn lấy thêm thông tin khác
                 ]
             ];
+
             return response()->json($responseData, 200);
         } else {
-            return response()->json(['error' => 'Tài khoản mật khẩu không chính xác'], 401);
+            return response()->json(['error' => 'Thông tin đăng nhập không chính xác'], 401);
         }
     }
+    
     //đăng ký ntd
     public function registerEmployer(Request $request)
     {
