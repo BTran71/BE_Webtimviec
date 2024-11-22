@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'api',
         'passwords' => 'users',
     ],
 
@@ -40,13 +40,21 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+        'candidate' => [
+            'driver' => 'sanctum',
+            'provider' => 'candidates',
+        ],
         'employer' => [
-            'driver' => 'session',
-            'provider' => 'employers',  // provider cho đối tượng employer
+            'driver' => 'sanctum',
+            'provider' => 'employers',
         ],
         'admin' => [
-            'driver' => 'session',
-            'provider' => 'admins',  // provider cho đối tượng employer
+            'driver' => 'sanctum',
+            'provider' => 'admins',
         ],
     ],
 
@@ -69,6 +77,10 @@ return [
 
     'providers' => [
         'users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
+        'candidates' =>[
             'driver' => 'eloquent',
             'model' => App\Models\Candidate::class,
         ],
@@ -105,6 +117,12 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'candidates' => [
+            'provider' => 'candidates',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

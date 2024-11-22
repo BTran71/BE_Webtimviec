@@ -8,7 +8,7 @@ use App\Models\Workplace;
 class WorkplaceController extends Controller
 {
      //hiện tất cả các workplace
-     public function getAllWorkplace(){
+    public function getAllWorkplace(){
         $getWorkplace = Workplace::all();
         return response()->json($getWorkplace,200);
     }
@@ -16,7 +16,7 @@ class WorkplaceController extends Controller
     public function addWorkplace(Request $request){
         $data = $request->all();
         $validator = Validator::make($data, [
-            'cityname' => 'required|string|max:255',
+            'cityname' => 'required|regex:/^[^0-9]*$/|max:255',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
@@ -31,12 +31,12 @@ class WorkplaceController extends Controller
         $data = $request->all();
         $workplace=Workplace::where('id',$id)->get();
         $validator = Validator::make($data, [
-            'cityname' => 'required|string|max:255',
+            'city' => 'required|regex:/^[^0-9]*$/|max:255',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-        $workplace->cityname=$data['cityname'];
+        $workplace->cityname=$data['city'];
         $workplace->save();
         return response()->json(['message' => 'Thêm nơi làm việc thành công'], 200);
     }
@@ -50,5 +50,14 @@ class WorkplaceController extends Controller
         else{
             return response()->json(['message' => 'Không tìm thấy nơi làm việc'], 404);
         }
+    }
+    public function searchWorkplace(Request $request){
+        // Tìm kiếm sản phẩm theo tên hoặc mô tả
+        $workplaces = Workplace::query()
+            ->where('city', 'LIKE', "%{$request->input('city')}%")
+            ->get();
+        return response()->json([
+            'data' => $workplaces,
+        ]);
     }
 }

@@ -24,7 +24,7 @@ class WorkexperienceController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-        $experience=new Work_experience();
+        $experience=new Workexperience();
         $experience->company_name=$data['company_name'];
         $experience->job_position=$data['job_position'];
         $experience->start_time=$data['start_time'];

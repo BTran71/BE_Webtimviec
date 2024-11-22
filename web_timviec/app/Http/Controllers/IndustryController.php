@@ -32,14 +32,15 @@ class IndustryController extends Controller
     public function updateIndustry(Request $request,$id){
         $data = $request->all();
         $industry=Industry::find($id);
+        
         $validator = Validator::make($data, [
             'industry_name' => 'required|regex:/^[^0-9]*$/|max:255',
         ]);
-        // if ($validator->fails()) {
-        //     return response()->json(['error' => $validator->errors()], 422);
-        // }
-        if($industry){
-            $industry->industry_name=$request->industry_name;
+        if ($validator->fails()) {
+           return response()->json(['error' => $validator->errors()], 422);
+        }
+         if($industry){
+            $industry->industry_name=$data['industry_name'];
             $industry->save();
             return response()->json(['message' => 'Cập nhật thành công'], 200);
         }     
@@ -51,9 +52,9 @@ class IndustryController extends Controller
         //     return response()->json(['message' => 'Industry not found'], 404);
         // }
         // // Kiểm tra key 'industry_name' tồn tại trong $data   
-        // // if (!array_key_exists('industry_name', $data)) {
-        // //     return response()->json(['message' => 'Industry name is missing'], 400);
-        // // }
+        // if (!array_key_exists('industry_name', $data)) {
+        //     return response()->json(['message' => 'Industry name is missing'], 400);
+        // }
                 
         // $industry->industry_name = $data['industry_name'];
         // $industry->save();

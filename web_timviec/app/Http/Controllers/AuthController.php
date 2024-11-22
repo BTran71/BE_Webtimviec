@@ -87,17 +87,21 @@ class AuthController extends Controller
     }
     //login admin
     public function loginAdmin(Request $request){
-        $admin = Admin::where('email', $request->email)->first();
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+        ]);
+        $admin=Admin::where('email',$request->email)->first();
         // Thực hiện xác thực bằng Auth
-        if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
-            // Lấy thông tin người dùng đã đăng nhập
-            $user = Auth::guard('admin')->user();
-
+        if ($admin || Hash::check($request->password, $admin->password)) {
+            $token = $admin->createToken('AdminApp')->plainTextToken;
             $responseData = [
                 'message' => 'Đăng nhập thành công',
+                'token'=>$token,
                 'user' => [
-                    'id' => $user->id,
-                    'email' => $user->email,
+                    'id' => $admin->id,
+                    'email' => $admin->email,
+                    'name'=>$admin->name,
                 ]
             ];
             return response()->json($responseData, 200);
@@ -118,7 +122,7 @@ class AuthController extends Controller
         }
     
         try {
-            $candidate = Admin::create([
+            $admin = Admin::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
@@ -131,17 +135,18 @@ class AuthController extends Controller
     }
     //login ứng viên
     public function loginCandidate(Request $request){
-        $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
-            $candidate = Auth::user();
-            $responseData = [
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+        ]);
+        $candidate=Candidate::where('email',$request->email)->first();
+        if (Hash::check($request->password, $candidate->password)) {
+            $token = $candidate->createToken('CandidateApp')->plainTextToken;
+            return response()->json([
                 'message' => 'Đăng nhập thành công',
-                'user' => [
-                    'id' =>$candidate->id,
-                    'email' => $candidate->email,
-                ]
-            ];
-            return response()->json($responseData, 200);
+                'email' => $candidate->email,
+                'token' => $token,  // Trả về token
+            ], 200);
         } else {
             return response()->json(['error' => 'Tài khoản mật khẩu không chính xác'], 401);
         }
@@ -150,7 +155,6 @@ class AuthController extends Controller
     //đăng ký ứng viên
     public function registerCandidate(Request $request)
     {
-        
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:candidate_account',
@@ -161,43 +165,47 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-    
+        
         try {
             $candidate = Candidate::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
-    
-            return response()->json(['message' => 'Đăng ký thành công'],200);
+            return response()->json([
+                'message' => 'Đăng ký tài khoản thành công',
+                ],200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->error()], 500);
         }
     }
     //login nhà tuyển dụng
     public function loginEmployer(Request $request){
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+        ]);
         $employer = Employer::where('email', $request->email)->first();
         // Kiểm tra tài khoản có tồn tại và có bị khóa không
-        if (!$employer || $employer->is_Lock == 0) {
-            return response()->json(['error' => 'Tài khoản đã bị khóa'], 401);
+        if (!$employer || $employer->is_Lock==0) {
+            return response()->json(['error' => 'Tài khoản đã bị khóa hoặc không tồn tại'], 403);
         }
-
         // Thực hiện xác thực bằng Auth
-        if (Auth::guard('employer')->attempt(['email' => $request->email, 'password' => $request->password])) {
-            // Lấy thông tin người dùng đã đăng nhập
-            $employer = Auth::guard('employer')->user();
-
+        else if (Hash::check($request->password, $employer->password)) {
+            // Tạo token cho employer
+            $token = $employer->createToken('EmployerApp')->plainTextToken;
             $responseData = [
                 'message' => 'Đăng nhập thành công',
+                'token' => $token,
                 'user' => [
                     'id' => $employer->id,
-                    'email' => $employer->email,
-                    'name' => $employer->company_name, // Nếu muốn lấy thêm thông tin khác
-                ]
+                    'email' => $employer->email, 
+                    'company_name' => $employer->company_name,
+                ],
             ];
-
             return response()->json($responseData, 200);
-        } else {
+        } 
+       else {
             return response()->json(['error' => 'Thông tin đăng nhập không chính xác'], 401);
         }
     }
@@ -219,7 +227,7 @@ class AuthController extends Controller
         }
     
         try {
-            $candidate = Employer::create([
+            $employer = Employer::create([
                 'company_name' => $request->company_name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
@@ -236,7 +244,15 @@ class AuthController extends Controller
     }
     public function logout(Request $request)
     {
-        Auth::logout();
-        return response()->json(['message' => 'Đăng xuất thành công']);
+        $guard = $request->header('guard', 'api');
+        $user = Auth::guard($guard)->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Không tìm thấy người dùng hoặc token không hợp lệ'], 401);
+        }
+        else{
+            $user->currentAccessToken()->delete();
+            return response()->json(['message' => 'Đăng xuất thành công']);
+        }
     }
 }
