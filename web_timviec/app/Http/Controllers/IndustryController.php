@@ -30,8 +30,8 @@ class IndustryController extends Controller
     }
     //cập nhật thông tin
     public function updateIndustry(Request $request,$id){
-        $data = $request->all();
-        $industry=Industry::find($id);
+        $data = $request->all(); 
+        $industry=Industry::where('id',$id)->first();
         
         $validator = Validator::make($data, [
             'industry_name' => 'required|regex:/^[^0-9]*$/|max:255',
@@ -39,11 +39,11 @@ class IndustryController extends Controller
         if ($validator->fails()) {
            return response()->json(['error' => $validator->errors()], 422);
         }
-         if($industry){
+        if($industry){
             $industry->industry_name=$data['industry_name'];
             $industry->save();
             return response()->json(['message' => 'Cập nhật thành công'], 200);
-        }     
+        }
         // $data = $request->validate([
         //     'industry_name' => 'required|string|max:255',
         // ]);
@@ -80,6 +80,6 @@ class IndustryController extends Controller
 
         return response()->json([
             'data' => $industrys,
-        ]);
+        ],200);
     }
 }
