@@ -31,7 +31,7 @@ class IndustryController extends Controller
     //cập nhật thông tin
     public function updateIndustry(Request $request,$id){
         $data = $request->all(); 
-        $industry=Industry::where('id',$id)->first();
+        $industry=Industry::find($id);
         
         $validator = Validator::make($data, [
             'industry_name' => 'required|regex:/^[^0-9]*$/|max:255',
