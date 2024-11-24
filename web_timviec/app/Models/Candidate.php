@@ -34,7 +34,7 @@ class Candidate extends Model implements AuthenticatableContract
 
     public function profile()
     {
-        return $this->belongsTo(profile::class);
+        return $this->hasOne(Profile::class);
     }
     /**
      * The attributes that should be hidden for serialization.

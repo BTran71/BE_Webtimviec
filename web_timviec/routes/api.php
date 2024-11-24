@@ -53,11 +53,11 @@ Route::middleware('role:admin')->group(function () {
     Route::post('/admin/searchIndustry',[IndustryController::class,'searchIndustry']);
 
     //api nơi làm việc
-    Route::get('/admin/getWorkplace',[IndustryController::class,'getAllWorkplace']);
-    Route::post('/admin/addWorkplace',[IndustryController::class,'addWorkplace']);
-    Route::put('/admin/updateWorkplace/{id}',[IndustryController::class,'updateWorkplace']);
-    Route::delete('/admin/deleteWorkplace/{id}',[IndustryController::class,'deleteWorkplace']);
-    Route::post('/admin/searchWorkplace',[IndustryController::class,'searchWorkplace']);
+    Route::get('/admin/getWorkplace',[WorkplaceController::class,'getAllWorkplace']);
+    Route::post('/admin/addWorkplace',[WorkplaceController::class,'addWorkplace']);
+    Route::put('/admin/updateWorkplace/{id}',[WorkplaceController::class,'updateWorkplace']);
+    Route::delete('/admin/deleteWorkplace/{id}',[WorkplaceController::class,'deleteWorkplace']);
+    Route::post('/admin/searchWorkplace',[WorkplaceController::class,'searchWorkplace']);
 });
 
 Route::middleware('role:employer')->group(function () {

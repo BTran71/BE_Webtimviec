@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Workplace;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class WorkplaceController extends Controller
 {
@@ -16,33 +19,33 @@ class WorkplaceController extends Controller
     public function addWorkplace(Request $request){
         $data = $request->all();
         $validator = Validator::make($data, [
-            'cityname' => 'required|regex:/^[^0-9]*$/|max:255',
+            'city' => 'required|regex:/^[^0-9]*$/|max:255',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
         $workplace=new Workplace();
-        $workplace->cityname=$data['cityname'];
+        $workplace->city=$data['city'];
         $workplace->save();
         return response()->json(['message' => 'Thêm nơi làm việc thành công'], 200);
     }
     //cập nhật thông tin
     public function updateWorkplace(Request $request,$id){
         $data = $request->all();
-        $workplace=Workplace::where('id',$id)->get();
+        $workplace=Workplace::where('id',$id)->first();
         $validator = Validator::make($data, [
             'city' => 'required|regex:/^[^0-9]*$/|max:255',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-        $workplace->cityname=$data['city'];
+        $workplace->city=$data['city'];
         $workplace->save();
-        return response()->json(['message' => 'Thêm nơi làm việc thành công'], 200);
+        return response()->json(['message' => 'Cập nhật nơi làm việc thành công'], 200);
     }
     //xóa workplace
     public function deleteWorkplace($id){
-        $workplace=Workplace::where('id',$id)->get();
+        $workplace=Workplace::where('id',$id)->first();
         if($workplace){
             $workplace->delete();
             return response()->json(['message' => 'Xóa nơi làm việc thành công'], 200);

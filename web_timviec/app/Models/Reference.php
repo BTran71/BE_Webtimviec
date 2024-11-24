@@ -5,16 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Workexperience extends Model
+class Reference extends Model
 {
     use HasFactory;
-    protected $table='work_experience';
+    protected $table='reference_information';
     protected $fillable=[
+        'name',
         'company_name',
-        'job_position',
-        'start_time',
-        'end_time',
-        'description',
+        'phone_number',
+        'position',
         'profile_id',
     ];
     protected $hidden=[

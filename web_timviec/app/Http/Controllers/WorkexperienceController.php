@@ -13,6 +13,8 @@ class WorkexperienceController extends Controller
         return response()->json($getdata,200);
     }
     public function addWorkExperience(Request $request){
+        $candidate=Auth::guard('candidate')->user();
+        
         $data=$request->all();
         $validator = Validator::make($data, [
             'company_name' => 'required|string|max:255',
@@ -32,5 +34,8 @@ class WorkexperienceController extends Controller
         $experience->description=$data['description'];
         $experience->save();
         return response()->json(['message' => 'Thêm nơi làm việc thành công'], 200);
+    }
+    public function deleteWorkPlace($id){
+
     }
 }
