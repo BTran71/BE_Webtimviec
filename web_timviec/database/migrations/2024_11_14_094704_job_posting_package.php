@@ -13,7 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('job_posting_packages', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->tinyInteger('type');
+            $table->float('price');
+            $table->text('describe');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -23,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('job_posting_packages');
     }
 };

@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('receipt', function (Blueprint $table) {
             $table->id();
-            $table->string('city');
+            $table->float('total');
+            $table->dateTime('date');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('receipt');
     }
 };
