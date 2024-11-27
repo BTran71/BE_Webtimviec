@@ -22,6 +22,6 @@ class Workexperience extends Model
     ];
     public function profile()
     {
-        return $this->belongsTo(Profile::class);
+        return $this->belongsTo(Profile::class,'profile_id',);
     }
 }

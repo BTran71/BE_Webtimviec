@@ -13,7 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('follow', function (Blueprint $table) {
+            $table->id(); // ID tự tăng cho bản ghi
+            $table->unsignedBigInteger('candidate_id'); // Khóa ngoại tới bảng users
+            $table->unsignedBigInteger('employer_id');
+            $table->foreign('candidate_id')->references('id')->on('candidate')->onDelete('cascade');
+            $table->foreign('employer_id')->references('id')->on('employer')->onDelete('cascade');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -23,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('follow');
     }
 };

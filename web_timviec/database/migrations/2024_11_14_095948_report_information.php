@@ -13,7 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('report_information', function (Blueprint $table) {
+            $table->id(); // ID tự tăng cho bản ghi
+            $table->text('content');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -23,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('report_information');
     }
 };

@@ -16,7 +16,7 @@ class AuthController extends Controller
     //gửi mail nhà tuyển dụng
     public function sendMailEmployer(Request $request)
     {
-        $user = Employer_account::where('email', $request->email)->firstOrFail();
+        $user = Employer::where('email', $request->email)->firstOrFail();
         $passwordReset = PasswordReset::updateOrCreate([
             'email' => $user->email,
         ], [
@@ -41,13 +41,13 @@ class AuthController extends Controller
                 'message' => 'This password reset token is invalid.',
             ], 422);
         }
-        $user = Employer_account::where('email', $passwordReset->email)->firstOrFail();
+        $user = Employer::where('email', $passwordReset->email)->firstOrFail();
         $updatePasswordUser = $user->update($request->only('password'));
         $passwordReset->delete();
 
         return response()->json([
             'success' => $updatePasswordUser,
-        ]);
+        ],200);
     }
     //gửi mail ứng viên
     public function sendMailCandidate(Request $request)
@@ -93,7 +93,7 @@ class AuthController extends Controller
         ]);
         $admin=Admin::where('email',$request->email)->first();
         // Thực hiện xác thực bằng Auth
-        if ($admin || Hash::check($request->password, $admin->password)) {
+        if ($admin && Hash::check($request->password, $admin->password)) {
             $token = $admin->createToken('AdminApp')->plainTextToken;
             $responseData = [
                 'message' => 'Đăng nhập thành công',
@@ -140,7 +140,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
         $candidate=Candidate::where('email',$request->email)->first();
-        if (Hash::check($request->password, $candidate->password)) {
+        if ($candidate && Hash::check($request->password, $candidate->password)) {
             $token = $candidate->createToken('CandidateApp')->plainTextToken;
             return response()->json([
                 'message' => 'Đăng nhập thành công',
@@ -254,5 +254,41 @@ class AuthController extends Controller
             $user->currentAccessToken()->delete();
             return response()->json(['message' => 'Đăng xuất thành công']);
         }
+    }
+    public function changeLock($id)
+    {
+        $user = Employer::where('id',$id)->first();
+        // var_dump($user);
+        if($user)
+        {
+            if($user->is_Lock==1){
+                Employer::where('id',$id)->where('is_Lock',1)->update([
+                    'is_Lock'=> 0
+                ]);
+                return  response()->json(['message','cập nhật trạng thái thành công'],200);
+            }
+            else{
+                Employer::where('id',$id)->where('is_Lock',0)->update([
+                    'is_Lock'=> 1
+                ]);
+                return  response()->json(['message','cập nhật trạng thái thành công'],200);
+            }
+        }
+        else
+        {
+            return  response()->json(['message','không thể cập nhật trạng thái'],400);
+        }
+    }
+    public function getAllEmployer(){
+        $getInfo = Employer::all();
+        return response()->json($getInfo,200);
+    }
+    public function searchEmployer(Request $request){
+        $info = Employer::query()
+            ->where('company_name', 'LIKE', "%{$request->input('company_name')}%")
+            ->get();
+        return response()->json([
+            'data' => $info,
+        ],200);
     }
 }

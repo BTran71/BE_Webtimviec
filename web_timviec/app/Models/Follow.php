@@ -12,11 +12,19 @@ class Follow extends Model
 
     public function employer()
     {
-        return $this->belongsTo(employer::class);
+        return $this->belongsTo(Employer::class);
     }
     
     public function candidate()
     {
-        return $this->belongsTo(candidate::class);
+        return $this->belongsTo(Candidate::class);
     }
+    protected $fillable=[
+        'employerid',
+        'candidateid',
+    ];
+    protected $hidden=[
+        'employerid',
+        'candidateid',
+    ];
 }
