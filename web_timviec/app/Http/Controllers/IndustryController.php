@@ -74,6 +74,7 @@ class IndustryController extends Controller
     //tìm kiếm
     public function searchIndustry(Request $request){
         // Tìm kiếm sản phẩm theo tên hoặc mô tả
+        
         $industrys = Industry::query()
             ->where('industry_name', 'LIKE', "%{$request->input('industry_name')}%")
             ->get();

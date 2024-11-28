@@ -59,6 +59,7 @@ Route::middleware('role:admin')->group(function () {
     Route::delete('/admin/deleteWorkplace/{id}',[WorkplaceController::class,'deleteWorkplace']);
     Route::post('/admin/searchWorkplace',[WorkplaceController::class,'searchWorkplace']);
 });
+Route::get('/admin/getIndustry',[IndustryController::class,'getAllIndustry']);
 
 Route::middleware('role:employer')->group(function () {
     

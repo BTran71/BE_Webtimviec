@@ -93,7 +93,7 @@ class AuthController extends Controller
         ]);
         $admin=Admin::where('email',$request->email)->first();
         // Thực hiện xác thực bằng Auth
-        if ($admin || Hash::check($request->password, $admin->password)) {
+        if ($admin && Hash::check($request->password, $admin->password)) {
             $token = $admin->createToken('AdminApp')->plainTextToken;
             $responseData = [
                 'message' => 'Đăng nhập thành công',
