@@ -25,6 +25,7 @@ return new class extends Migration
             $table->float('salary');
             $table->string('experience');
             $table->string('address');
+            $table->tinyInteger('isLock')->default(0);
             $table->unsignedBigInteger('candidate_id'); 
             $table->foreign('candidate_id')->references('id')->on('candidate_account')->onDelete('cascade');
             $table->timestamps();

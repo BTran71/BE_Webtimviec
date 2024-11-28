@@ -12,4 +12,7 @@ class Workplace extends Model
     protected $fillable = [
         'city',
     ];
+    public function workplaceDetails(){
+         return $this->hasMany(Workplace_Profile::class); 
+    }
 }

@@ -60,6 +60,35 @@ sửa
     delete('/admin/deleteWorkplace/{id}')
     post('/admin/searchWorkplace')
 
+    //CRUD api ngôn ngữ
+    tương tự nhưng thay bằng 
+    key:language_name
+    
+    get('/admin/getLanguage)
+    post('/admin/addLanguage)
+    put('/admin/updateLanguage/{id})
+    delete('/admin/deleteLanguage/{id}')
+    post('/admin/searchLanguage')
+
+    //CRUD api tin học
+    tương tự nhưng thay bằng 
+    key:name
+    
+    get('/admin/getIT)
+    post('/admin/addIT)
+    put('/admin/updateIT/{id})
+    delete('/admin/deleteIT/{id}')
+    post('/admin/searchIT')
+
+    //quản lý tài khoản nhà tuyển dụng
+    id: là id của nhà tuyển dụng
+    put('/admin/{id}/changeLock'): 
+    dùng để chuyển đổi giữa khóa và mở khóa tài khoản nhà tuyển dụng
+
+    get('/admin/employer'): lấy thông tin của tất cả các tài khoản nhà tuyển dụng 
+
+    post('/admin/employerSearch'): tìm kiếm tài khoản nhà tuyển dụng dựa trên key=company_name
+
 
 
 

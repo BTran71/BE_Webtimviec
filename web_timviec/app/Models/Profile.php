@@ -30,6 +30,22 @@ class Profile extends Model
     {
         return $this->hasMany(Academy::class);
     }
+    public function languageDetails()
+    {
+        return $this->hasMany(LanguageDetails::class);
+    }
+    public function information_Details()
+    {
+        return $this->hasMany(InfoDetails::class);
+    }
+    public function workplaceDetails()
+    {
+        return $this->hasMany(Workplace_Profile::class);
+    }
+    public function industries()
+    {
+        return $this->hasMany(Industry_Profile::class);
+    }
     protected $fillable=[
         'fullname',
         'email',
@@ -42,6 +58,7 @@ class Profile extends Model
         'experience',
         'address',
         'candidate_id',
+        'isLock',
     ];
     protected $hidden=[
         'candidate_id',

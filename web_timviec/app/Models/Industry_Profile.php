@@ -5,21 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class InfoDetails extends Model
+class Industry_Profile extends Model
 {
     use HasFactory;
-    protected $table='technology_details';
+    protected $table='industry_profile';
     protected $fillable=[
         'profile_id',
-        'it_id'
+        'industry_id'
     ];
-    protected $hidden=['profile_id','it_id'];
+    protected $hidden=['profile_id','industry_id',];
     public function profile()
     {
         return $this->belongsTo(Profile::class);
     }
-    public function technology()
+    public function industry()
     {
-        return $this->belongsTo(IT::class);
+        return $this->belongsTo(Industry::class);
     }
 }

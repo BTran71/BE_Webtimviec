@@ -13,7 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('language_details', function (Blueprint $table) {
+            $table->id(); // ID tự tăng cho bản ghi
+            $table->unsignedBigInteger('profile_id'); // Khóa ngoại tới bảng users
+            $table->unsignedBigInteger('language_id');
+            $table->foreign('profile_id')->references('id')->on('profile')->onDelete('cascade');
+            $table->foreign('language_id')->references('id')->on('language')->onDelete('cascade');
+            $table->string('level');
+            $table->timestamps();
+            $table->unique(['profile_id', 'language_id']);
+        });
     }
 
     /**
@@ -23,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('language_details');
     }
 };
