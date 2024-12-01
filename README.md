@@ -159,7 +159,7 @@ sửa
 	key:
 			'fullname'
             'email'
-            'image':test ở form data chuyển kiểu text thành file rồi chọn file hình ảnh bỏ vào
+            'image':test update mấy cái khác thôi nếu tạo profile mà chạy đc image thì sửa đc sửa không test được image
             'phone_number'
             'gender': ghi Nam hoặc Nữ đúng chữ mà tui ghi nha 
             'skills'
