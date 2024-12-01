@@ -19,8 +19,8 @@ class WorkexperienceController extends Controller
         $validator = Validator::make($data, [
             'company_name' => 'required|string|max:255',
             'job_position' => 'required|string|max:255',
-            'start_time' => 'required|date_format:d/m/Y',
-            'end_time' => 'required|date_format:d/m/Y',
+            'start_time' => 'required|date_format:dd/mm/yyyy',
+            'end_time' => 'required|date_format:dd/mm/yyyy',
             'description' => 'nullable|string|max:255',
         ]);
         if ($validator->fails()) {

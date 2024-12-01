@@ -89,6 +89,87 @@ sửa
 
     post('/admin/employerSearch'): tìm kiếm tài khoản nhà tuyển dụng dựa trên key=company_name
 
+    //quản lý tài khoản nhà tuyển dụng
+    id: là id của nhà tuyển dụng
+    put('/admin/{id}/changeLock'): 
+    dùng để chuyển đổi giữa khóa và mở khóa tài khoản nhà tuyển dụng
+
+    get('/admin/employer'): lấy thông tin của tất cả các tài khoản nhà tuyển dụng 
+
+    post('/admin/employerSearch'): tìm kiếm tài khoản nhà tuyển dụng dựa trên key=company_name
+
+    //CRUD api gói dịch vụ
+    key chung cho thêm, sửa
+            'name'
+            'type' gồm 2 loại ưu tiên=1 và bình thường=0
+            'price'
+            'describe'
+    
+    get('/admin/getPosting)
+    post('/admin/addPosting)
+    put('/admin/updatePosting/{id})
+    delete('/admin/deletePosting/{id}')
+    post('/admin/searchPosting'): tìm kiếm gói dịch vụ dựa trên key=name
+
+    //api profile
+    post('/candidate/profile/add',[ProfileController::class,'addProfile']);
+    key:
+            'fullname'
+            'email'
+            'image':test ở form data chuyển kiểu text thành file rồi chọn file hình ảnh bỏ vào
+            'phone_number'
+            'gender': ghi Nam hoặc Nữ đúng chữ mà tui ghi nha 
+            'skills'
+            'day_ofbirth': ghi theo dạng dd-mm-yyyy
+            'salary'
+            'experience'
+            'address'
+
+            // Validation cho bảng liên quan
+            
+            'work_ex[0][company_name]'
+            'work_ex[0][job_position]'
+            'work_ex[0][start_time]' 
+            'work_ex[0][end_time]' 
+            'work_ex[0][description]'
+
+           
+            'reference[0][name]'
+            'reference[0][company_name]'
+            'reference[0][phone_number]'
+            'reference[0][position]'
+
+            
+            'academy[0][schoolname]'
+            'academy[0][major]'
+            'academy[0][degree]'
+            'academy[0][start_time]'
+            'academy[0][end_time]'
+
+            
+            'languageDetails[0][level]'
+			'languageDetails[0][language_id]'
+			
+			information_Details[0][it_id]
+			
+			workplaceDetails[0][workplace_id]
+			
+			industries[0][industry_id]
+    put('/candidate/profile/update',[ProfileController::class,'updateProfile']);
+	key:
+			'fullname'
+            'email'
+            'image':test ở form data chuyển kiểu text thành file rồi chọn file hình ảnh bỏ vào
+            'phone_number'
+            'gender': ghi Nam hoặc Nữ đúng chữ mà tui ghi nha 
+            'skills'
+            'day_ofbirth': ghi theo dạng dd-mm-yyyy
+            'salary'
+            'experience'
+            'address'
+
+    put('/candidate/profile/lock'): chuyển trạng thái của profile nếu 0 thì là khóa hồ sơ còn 1 là không khóa
+
 
 
 

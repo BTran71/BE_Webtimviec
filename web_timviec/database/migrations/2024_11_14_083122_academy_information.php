@@ -16,9 +16,10 @@ return new class extends Migration
         Schema::create('academy_information', function (Blueprint $table) {
             $table->id();
             $table->string('schoolname');
-            $table->string('company_name');
-            $table->dateTime('start_time');
-            $table->dateTime('end_time');
+            $table->string('major');
+            $table->string('degree');
+            $table->date('start_time');
+            $table->date('end_time');
             $table->unsignedBigInteger('profile_id'); 
             $table->foreign('profile_id')->references('id')->on('profile')->onDelete('cascade');
             $table->timestamps();

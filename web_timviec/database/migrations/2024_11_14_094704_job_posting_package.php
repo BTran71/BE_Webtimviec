@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->tinyInteger('type');
-            $table->float('price');
+            $table->demical('price');
             $table->text('describe');
             $table->timestamps();
         });

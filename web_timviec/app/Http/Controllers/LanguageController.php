@@ -59,7 +59,7 @@ class LanguageController extends Controller
     //tìm kiếm
     public function searchLanguage(Request $request){
         // Tìm kiếm sản phẩm theo tên hoặc mô tả
-        $infos = Language::query()
+        $info = Language::query()
             ->where('language_name', 'LIKE', "%{$request->input('language_name')}%")
             ->get();
 

@@ -9,6 +9,8 @@ use App\Http\Controllers\WorkexperienceController;
 use App\Http\Controllers\WorkplaceController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ITController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\JobPostingController;
 
 
 /*
@@ -49,7 +51,11 @@ Route::post('/registerAdmin', [AuthController::class,'registerAdmin']);
 Route::post('/logout',[AuthController::class,'logout']);
 
 
-
+//api hiện các thông tin
+Route::get('/admin/getIndustry',[IndustryController::class,'getAllIndustry']);
+Route::get('/admin/getWorkplace',[WorkplaceController::class,'getAllWorkplace']);
+Route::get('/admin/getLanguage',[LanguageController::class,'getAllLanguage']);
+Route::get('/admin/getIT',[ITController::class,'getAllIT']);
 //api nơi làm việc
 
 Route::middleware('role:admin')->group(function () {
@@ -58,42 +64,53 @@ Route::middleware('role:admin')->group(function () {
     Route::get('/admin/employer',[AuthController::class,'getAllEmployer']);
     Route::post('/admin/employerSearch',[AuthController::class,'searchEmployer']);
    //api lĩnh vực
-    Route::get('/admin/getIndustry',[IndustryController::class,'getAllIndustry']);
+    // Route::get('/admin/getIndustry',[IndustryController::class,'getAllIndustry']);
     Route::post('/admin/addIndustry',[IndustryController::class,'addIndustry']);
     Route::put('/admin/updateIndustry/{id}',[IndustryController::class,'updateIndustry']);
     Route::delete('/admin/deleteIndustry/{id}',[IndustryController::class,'deleteIndustry']);
     Route::post('/admin/searchIndustry',[IndustryController::class,'searchIndustry']);
 
     //api nơi làm việc
-    Route::get('/admin/getWorkplace',[WorkplaceController::class,'getAllWorkplace']);
+    // Route::get('/admin/getWorkplace',[WorkplaceController::class,'getAllWorkplace']);
     Route::post('/admin/addWorkplace',[WorkplaceController::class,'addWorkplace']);
     Route::put('/admin/updateWorkplace/{id}',[WorkplaceController::class,'updateWorkplace']);
     Route::delete('/admin/deleteWorkplace/{id}',[WorkplaceController::class,'deleteWorkplace']);
     Route::post('/admin/searchWorkplace',[WorkplaceController::class,'searchWorkplace']);
     //api ngôn ngữ
-    Route::get('/admin/getLanguage',[LanguageController::class,'getAllLanguage']);
+    // Route::get('/admin/getLanguage',[LanguageController::class,'getAllLanguage']);
     Route::post('/admin/addLanguage',[LanguageController::class,'addLanguage']);
     Route::put('/admin/updateLanguage/{id}',[LanguageController::class,'updateLanguage']);
     Route::delete('/admin/deleteLanguage/{id}',[LanguageController::class,'deleteLanguage']);
     Route::post('/admin/searchLanguage',[LanguageController::class,'searchLanguage']);
     //api công nghệ
-    Route::get('/admin/getIT',[ITController::class,'getAllIT']);
+    // Route::get('/admin/getIT',[ITController::class,'getAllIT']);
     Route::post('/admin/addIT',[ITController::class,'addIT']);
     Route::put('/admin/updateIT/{id}',[ITController::class,'updateIT']);
     Route::delete('/admin/deleteIT/{id}',[ITController::class,'deleteIT']);
     Route::post('/admin/searchIT',[ITController::class,'searchIT']);
+
+    //api gói dịch vụ
+    Route::get('/admin/getPosting',[JobPostingController::class,'getAllJobPosting']);
+    Route::post('/admin/addPosting',[JobPostingController::class,'addJobPosting']);
+    Route::put('/admin/updatePosting/{id}',[JobPostingController::class,'updateJobPosting']);
+    Route::delete('/admin/deletePosting/{id}',[JobPostingController::class,'deleteJobPosting']);
+    Route::post('/admin/searchPosting',[JobPostingController::class,'searchJobPosting']);
 });
 
 Route::middleware('role:employer')->group(function () {
+    Route::post('/employer/add',[ProfileController::class,'addProfile']);
+    Route::put('/employer/lock',[ProfileController::class,'changeLock']);
+    Route::put('/employer/update',[ProfileController::class,'updateProfile']);
     
-    
-    Route::get('/employer/dashboard', [EmployerController::class, 'dashboard']);
+    // Route::get('/employer/dashboard', [EmployerController::class, 'dashboard']);
         // Các route khác cho employer
 });
 
-Route::middleware('role:api')->group(function () {
-    Route::get('/candidate/dashboard', [CandidateController::class, 'dashboard']);
+Route::middleware('role:candidate')->group(function () {
+    //Route::get('/candidate/dashboard', [CandidateController::class, 'dashboard']);
     Route::post('/candidate/profile/add',[ProfileController::class,'addProfile']);
-   
+    Route::put('/candidate/profile/lock',[ProfileController::class,'changeLock']);
+    Route::put('/candidate/profile/update',[ProfileController::class,'updateProfile']);
+    
 });
 

@@ -3,54 +3,64 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\IT;
+use App\Models\JobPosting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class ITController extends Controller
+class JobPostingController extends Controller
 {
-     //hiện tất cả các IT
-    public function getAllIT(){
-        $getIT = IT::all();
-        return response()->json($getIT,200);
+     //hiện tất cả các JobPosting
+     public function getAllJobPosting(){
+        $getinfo = JobPosting::all();
+        return response()->json($getinfo,200);
     }
-    //thêm IT
-    public function addIT(Request $request){
+    //thêm JobPosting
+    public function addJobPosting(Request $request){
         $data = $request->all();
         $validator = Validator::make($data,[
             'name' => 'required|regex:/^[^0-9]*$/|max:255',
+            'price'=> 'required|numeric',
+            'describe'=> 'required|regex:/^[^0-9]*$/|max:255',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-        $IT=new IT();
-        $IT->name=$data['name'];
-        $IT->save();
+        $info=new JobPosting();
+        $info->name=$data['name'];
+        $info->type=$data['type'];
+        $info->price=$data['price'];
+        $info->describe=$data['describe'];
+        $info->save();
         return response()->json(['message' => 'Thêm thành công'], 200);
     }
     //cập nhật thông tin
-    public function updateIT(Request $request,$id){
+    public function updateJobPosting(Request $request,$id){
         $data = $request->all(); 
-        $info=IT::find($id);
+        $info=JobPosting::find($id);
         
         $validator = Validator::make($data, [
             'name' => 'required|regex:/^[^0-9]*$/|max:255',
+            'price'=> 'required|numeric',
+            'describe'=> 'required|regex:/^[^0-9]*$/|max:255',
         ]);
         if ($validator->fails()) {
            return response()->json(['error' => $validator->errors()], 422);
         }
         if($info){
             $info->name=$data['name'];
+            $info->type=$data['type'];
+            $info->price=$data['price'];
+            $info->describe=$data['describe'];
             $info->save();
             return response()->json(['message' => 'Cập nhật thành công'], 200);
         }
     }
     //xóa lĩnh vực
-    public function deleteIT($id){
-        $IT=IT::find($id);
-        if($IT){
-            $IT->delete();
+    public function deleteJobPosting($id){
+        $info=JobPosting::find($id);
+        if($info){
+            $info->delete();
             return response()->json(['message' => 'Xóa thành công'], 200);
         }
         else{
@@ -58,8 +68,8 @@ class ITController extends Controller
         }
     }
     //tìm kiếm
-    public function searchIT(Request $request){
-        $info = IT::query()
+    public function searchJobPosting(Request $request){
+        $info = JobPosting::query()
             ->where('name', 'LIKE', "%{$request->input('name')}%")
             ->get();
 

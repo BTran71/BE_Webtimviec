@@ -21,8 +21,8 @@ return new class extends Migration
             $table->integer('phone_number');
             $table->tinyInteger('gender')->default(0);
             $table->text('skills');
-            $table->dateTime('day_ofbirth');
-            $table->float('salary');
+            $table->date('day_ofbirth');
+            $table->decimal('salary');
             $table->string('experience');
             $table->string('address');
             $table->tinyInteger('isLock')->default(0);

@@ -11,7 +11,8 @@ class Academy extends Model
     protected $table='academy_information';
     protected $fillable=[
         'schoolname',
-        'company_name',
+        'major',
+        'degree',
         'start_time',
         'end_time',
         'profile_id',
