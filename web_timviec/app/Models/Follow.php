@@ -23,8 +23,8 @@ class Follow extends Model
         'employerid',
         'candidateid',
     ];
-    protected $hidden=[
-        'employerid',
-        'candidateid',
-    ];
+    // protected $hidden=[
+    //     'employerid',
+    //     'candidateid',
+    // ];
 }

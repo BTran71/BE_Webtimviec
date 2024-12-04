@@ -13,7 +13,7 @@ class InfoDetails extends Model
         'profile_id',
         'it_id'
     ];
-    protected $hidden=['profile_id','it_id'];
+    // protected $hidden=['profile_id','it_id'];
     public function profile()
     {
         return $this->belongsTo(Profile::class);

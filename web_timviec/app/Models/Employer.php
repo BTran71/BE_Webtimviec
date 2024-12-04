@@ -61,4 +61,7 @@ class Employer extends Model implements AuthenticatableContract
     // {
     //     $this->attributes['password'] = Hash::make($value);
     // }
+    public function recruitmentNews(){
+        return $this->hasMany(RecruitmentNews::class);
+    }
 }

@@ -7,6 +7,7 @@ use App\Models\Language;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Models\LanguageDetails;
 
 class LanguageController extends Controller
 {
@@ -67,4 +68,6 @@ class LanguageController extends Controller
             'data' => $info,
         ],200);
     }
+
+    
 }

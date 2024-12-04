@@ -170,6 +170,47 @@ sửa
 
     put('/candidate/profile/lock'): chuyển trạng thái của profile nếu 0 thì là khóa hồ sơ còn 1 là không khóa
 
+    get('/candidate/getWorkExperience');
+    post('/candidate/addWorkExperience');
+    put('/candidate/updateWorkExperience/{id}');
+    delete('/candidate/deleteWorkExperience/{id}');
+
+    //api công nghệ
+    get('/candidate/getITDetails');
+    post('/candidate/addITDetails');
+    put('/candidate/updateITDetails/{id}');
+    delete('/candidate/deleteITDetails/{id}');
+
+    //api ngôn ngữ
+    get('/candidate/getLanguageDetails');
+    post('/candidate/addLanguageDetails');
+    put('/candidate/updateLanguageDetails/{id}');
+    delete('/candidate/deleteLanguageDetails/{id}');
+
+    //api người liên lạc
+    get('/candidate/getReference');
+    post('/candidate/addReference');
+    put('/candidate/updateReference/{id}');
+    delete('/candidate/deleteReference/{id}');
+
+    //api trường học
+    get('/candidate/getAcademy');
+    post('/candidate/addAcademy');
+    put('/candidate/updateAcademy/{id}');
+    delete('/candidate/deleteAcademy/{id}');
+
+    //api ngành nghề
+    get('/candidate/getIndustryProfile);
+    post('/candidate/addIndustryProfile');
+    put('/candidate/updateIndustryProfile/{id}');
+    delete('/candidate/deleteIndustryProfile/{id}');
+
+    //api nơi làm việc
+    get('/candidate/getWorkplaceDetails');
+    post('/candidate/addWorkplaceDetails');
+    put('/candidate/updateWorkplaceDetails/{id}');
+    delete('/candidate/deleteWorkplaceDetails/{id});
+
 
 
 

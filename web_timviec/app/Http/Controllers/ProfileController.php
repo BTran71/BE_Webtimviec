@@ -21,6 +21,7 @@ use App\Models\Industry;
 use App\Models\Language;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -47,7 +48,7 @@ class ProfileController extends Controller
             'work_ex.*.job_position' => 'required|string|max:255',
             'work_ex.*.start_time' => 'required|date|date_format:d-m-Y|after_or_equal:1970-01-01|before_or_equal:now',
             'work_ex.*.end_time' => 'nullable|date|date_format:d-m-Y|after:work_ex.*.start_time|before_or_equal:now',
-            'work_ex.*.description' => 'nullable|string',
+            'work_ex.*.description' => 'required|string',
 
             'reference' => 'nullable|array',
             'reference.*.name' => 'required|regex:/^[^0-9]*$/|max:255',

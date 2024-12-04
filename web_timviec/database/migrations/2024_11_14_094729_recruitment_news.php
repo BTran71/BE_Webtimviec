@@ -15,10 +15,24 @@ return new class extends Migration
     {
         Schema::create('recruitment_news', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->tinyInteger('type');
-            $table->float('price');
+            $table->string('title');
             $table->text('describe');
+            $table->date('posteddate');
+            $table->text('benefit');
+            $table->decimal('salary');
+            $table->date('deadline');
+            $table->string('status');
+            $table->string('experience');
+            $table->text('skills');
+            $table->decimal('quantity');
+            $table->string('workingmodel');
+            $table->string('qualifications');
+            $table->text('requirements');
+            $table->tinyInteger('isActive')->default(1);
+            $table->unsignedBigInteger('employer_id'); 
+            $table->foreign('employer_id')->references('id')->on('employer_account')->onDelete('cascade');
+            $table->unsignedBigInteger('industry_id'); 
+            $table->foreign('industry_id')->references('id')->on('industry')->onDelete('cascade');
             $table->timestamps();
         });
     }
