@@ -11,7 +11,12 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ITController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JobPostingController;
-
+use App\Http\Controllers\ReferenceController;
+use App\Http\Controllers\WorkplaceDetailsController;
+use App\Http\Controllers\ITDetailsController;
+use App\Http\Controllers\LanguageDetailsController;
+use App\Http\Controllers\IndustryDetailsController;
+use App\Http\Controllers\AcademyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -112,5 +117,46 @@ Route::middleware('role:candidate')->group(function () {
     Route::put('/candidate/profile/lock',[ProfileController::class,'changeLock']);
     Route::put('/candidate/profile/update',[ProfileController::class,'updateProfile']);
     
+    //api kinh nghiệm
+    Route::get('/candidate/getWorkExperience',[WorkexperienceController::class,'getWorkExperience']);
+    Route::post('/candidate/addWorkExperience',[WorkexperienceController::class,'addWorkExperience']);
+    Route::put('/candidate/updateWorkExperience/{id}',[WorkexperienceController::class,'updateWorkExperience']);
+    Route::delete('/candidate/deleteWorkExperience/{id}',[WorkexperienceController::class,'deleteWorkExperience']);
+
+    //api công nghệ
+    Route::get('/candidate/getITDetails',[ITDetailsController::class,'getITDetails']);
+    Route::post('/candidate/addITDetails',[ITDetailsController::class,'addITDetails']);
+    Route::put('/candidate/updateITDetails/{id}',[ITDetailsController::class,'updateITDetails']);
+    Route::delete('/candidate/deleteITDetails/{id}',[ITDetailsController::class,'deleteITDetails']);
+
+    //api ngôn ngữ
+    Route::get('/candidate/getLanguageDetails',[LanguageDetailsController::class,'getAllDetails']);
+    Route::post('/candidate/addLanguageDetails',[LanguageDetailsController::class,'addLanguageDetails']);
+    Route::put('/candidate/updateLanguageDetails/{id}',[LanguageDetailsController::class,'updateLanguageDetails']);
+    Route::delete('/candidate/deleteLanguageDetails/{id}',[LanguageDetailsController::class,'deleteLanguageDetails']);
+
+    //api người liên lạc
+    Route::get('/candidate/getReference',[ReferenceController::class,'getReference']);
+    Route::post('/candidate/addReference',[ReferenceController::class,'addReference']);
+    Route::put('/candidate/updateReference/{id}',[ReferenceController::class,'updateReference']);
+    Route::delete('/candidate/deleteReference/{id}',[ReferenceController::class,'deleteReference']);
+
+    //api trường học
+    Route::get('/candidate/getAcademy',[AcademyController::class,'getAcademy']);
+    Route::post('/candidate/addAcademy',[AcademyController::class,'addAcademy']);
+    Route::put('/candidate/updateAcademy/{id}',[AcademyController::class,'updateAcademy']);
+    Route::delete('/candidate/deleteAcademy/{id}',[AcademyController::class,'deleteAcademy']);
+
+    //api ngành nghề
+    Route::get('/candidate/getIndustryProfile',[IndustryDetailsController::class,'getIndustryProfile']);
+    Route::post('/candidate/addIndustryProfile',[IndustryDetailsController::class,'addIndustryProfile']);
+    Route::put('/candidate/updateIndustryProfile/{id}',[IndustryDetailsController::class,'updateIndustryProfile']);
+    Route::delete('/candidate/deleteIndustryProfile/{id}',[IndustryDetailsController::class,'deleteIndustryProfile']);
+
+    //api nơi làm việc
+    Route::get('/candidate/getWorkplaceDetails',[WorkplaceDetailsController::class,'getWorkplaceDetails']);
+    Route::post('/candidate/addWorkplaceDetails',[WorkplaceDetailsController::class,'addWorkplaceDetails']);
+    Route::put('/candidate/updateWorkplaceDetails/{id}',[WorkplaceDetailsController::class,'updateWorkplaceDetails']);
+    Route::delete('/candidate/deleteWorkplaceDetails/{id}',[WorkplaceDetailsController::class,'deleteWorkplaceDetails']);
 });
 

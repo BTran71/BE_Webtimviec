@@ -14,7 +14,7 @@ class LanguageDetails extends Model
         'language_id',
         'level',
     ];
-    protected $hidden=['profile_id','language_id',];
+    // protected $hidden=['profile_id','language_id',];
     public function profile()
     {
         return $this->belongsToMany(Profile::class);

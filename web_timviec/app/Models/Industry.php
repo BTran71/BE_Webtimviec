@@ -17,4 +17,7 @@ class Industry extends Model
     {
         return $this->hasMany(Industry_Profile::class);
     }
+    public function news(){
+        return $this->hasMany(RecruitmentNews::class);
+    }
 }

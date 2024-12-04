@@ -17,13 +17,13 @@ class ReferenceController extends Controller
         if(!$profile){
             return response()->json(['message'=>'Hồ sơ chưa được tạo'],401);
         }else{
-            $getdata=Reference::with('profile')->where('profile_id',$profile->id)->get();
+            $getdata=Reference::where('profile_id',$profile->id)->get();
             return response()->json($getdata,200);
         }
     }
     public function addReference(Request $request){
         $user=Auth::guard('candidate')->user();
-        $profileinfo=Profile::where('candidate_id',$user->id)->first();
+        $profile=Profile::where('candidate_id',$user->id)->first();
         $data = $request->all();
         $validator = Validator::make($data, [
             'company_name' => 'required|regex:/^[^0-9]*$/|max:255',
@@ -43,7 +43,7 @@ class ReferenceController extends Controller
             $reference->name=$data['name'];
             $reference->phone_number=$data['phone_number'];
             $reference->position=$data['position'];
-            $reference->profile_id=$profileinfo->id;
+            $reference->profile_id=$profile->id;
             $reference->save();
             return response()->json(['message' => 'Thêm nơi thông tin thành công'], 200);
         }
@@ -75,7 +75,9 @@ class ReferenceController extends Controller
 
     //xóa thông tin 
     public function deleteReference($id){
-        $info=Reference::find($id);
+        $user=Auth::guard('candidate')->user();
+        $profile=$user->profile;
+        $info=Reference::where('id',$id)->where('profile_id',$profile->id)->first();
         if(!$info){
             return response()->json(['message'=>'Không tìm thấy thông tin'],401);
         }

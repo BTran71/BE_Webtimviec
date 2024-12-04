@@ -13,7 +13,7 @@ class Workplace_Profile extends Model
         'profile_id',
         'workplace_id'
     ];
-    protected $hidden=['profile_id','workplace_id'];
+    // protected $hidden=['profile_id','workplace_id'];
     public function profile()
     {
         return $this->belongsToMany(Profile::class,'profile_id');

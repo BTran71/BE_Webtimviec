@@ -13,7 +13,6 @@ class Industry_Profile extends Model
         'profile_id',
         'industry_id'
     ];
-    protected $hidden=['profile_id','industry_id',];
     public function profile()
     {
         return $this->belongsTo(Profile::class);

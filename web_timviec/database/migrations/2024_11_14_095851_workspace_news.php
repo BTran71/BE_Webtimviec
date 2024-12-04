@@ -13,7 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('workspace_news', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('workplace_id'); 
+            $table->foreign('workplace_id')->references('id')->on('workplace')->onDelete('cascade');
+            $table->unsignedBigInteger('news_id'); 
+            $table->foreign('news_id')->references('id')->on('recruitment_news')->onDelete('cascade');
+            $table->string('homeaddress');
+            $table->timestamps();
+        });
     }
 
     /**
