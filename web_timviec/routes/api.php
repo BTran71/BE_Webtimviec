@@ -111,8 +111,8 @@ Route::middleware('role:employer')->group(function () {
     // Route::put('/employer/lock',[ProfileController::class,'changeLock']);
     // Route::put('/employer/update',[ProfileController::class,'updateProfile']);
     
-    // Route::get('/employer/dashboard', [EmployerController::class, 'dashboard']);
-        // Các route khác cho employer
+    //api lấy thông tin hồ sơ
+    Route::get('/employer/getProfile/{id}',[SendController::class,'getSendProfile']);
 });
 
 Route::middleware('role:candidate')->group(function () {
@@ -171,5 +171,5 @@ Route::middleware('role:candidate')->group(function () {
 Route::get('/filter-jobs', [RecruitmentNewsController::class, 'filterJobs']);
 Route::get('/active-recruitments', [RecruitmentNewsController::class, 'showActiveRecruitments']);
 //cổng thanh toán
-Route::post('/payment', [PaymentController::class, 'vnpayPayment']);
+Route::post('/payment', [PaymentController::class, 'momocheckout']);
 

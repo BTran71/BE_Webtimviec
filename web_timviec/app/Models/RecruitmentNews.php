@@ -43,6 +43,10 @@ class RecruitmentNews extends Model
     public function workplacenews(){
         return $this->hasMany(WorkplaceNews::class);
     }
+    public function send(){
+        return $this->belongsToMany(Profile::class, 'sending_details', 'recruitment_news_id', 'profile_id')
+                    ->withPivot('senddate', 'status'); // Lấy thêm các cột trong bảng trung gian;
+    }
     protected $hidden=[
         'employer_id',
         'industry_id',

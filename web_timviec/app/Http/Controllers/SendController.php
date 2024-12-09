@@ -27,8 +27,12 @@ class SendController extends Controller
         $send->save();
         return response()->json(['message'=>'Đã gửi hồ sơ'],200);
     }
-    public function getSendProfile(){
-        // $user=Auth::guard('employer')->user();
-        // $data=Sending::
+    public function getSendProfile($id){
+        $user=Auth::guard('employer')->user();
+        $data=RecruitmentNews::with('send')->where('employer_id',$user->id)->findOrFail($id);
+        return response()->json([
+            'news'=>$data->title,
+            'profile'=>$data->send,
+        ]);
     }
 }
