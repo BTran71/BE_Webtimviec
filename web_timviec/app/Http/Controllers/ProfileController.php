@@ -97,7 +97,7 @@ class ProfileController extends Controller
             'languageDetails' => 'nullable|array',
             'languageDetails.*.level'=>'required|regex:/^[^0-9]*$/|max:255',
         ]);
-        $day_ofbirth = Carbon::createFromFormat('d-m-Y',$data['day_ofbirth']);
+        $day_ofbirth = Carbon::createFromFormat('d-m-Y',$data['day_ofbirth'])->format('Y-m-d');
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -137,7 +137,7 @@ class ProfileController extends Controller
                 if ($request->has('work_ex')) {
                    
                     foreach ($data['work_ex'] as $work) {
-                        $starttime = Carbon::createFromFormat('d-m-Y', $work['start_time']);
+                        $starttime = Carbon::createFromFormat('d-m-Y', $work['start_time'])->format('Y-m-d');
                         $endtime = isset($work['end_time']) ? Carbon::createFromFormat('d-m-Y', $work['end_time'])->format('Y-m-d') : null;
                         $workex=new Workexperience();
                         $workex->company_name=$work['company_name'];
@@ -158,7 +158,7 @@ class ProfileController extends Controller
     
                 if ($request->has('academy')) {
                     foreach ($request->academy as $academy) {
-                        $starttime = Carbon::createFromFormat('d-m-Y', $academy['start_time']);
+                        $starttime = Carbon::createFromFormat('d-m-Y', $academy['start_time'])->format('Y-m-d');
                         $endtime = isset($academy['end_time']) ? Carbon::createFromFormat('d-m-Y', $academy['end_time']) : null;
                         $academy['start_time']=$starttime;
                         $academy['end_time']=$endtime;

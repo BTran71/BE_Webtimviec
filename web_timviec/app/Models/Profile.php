@@ -46,6 +46,10 @@ class Profile extends Model
     {
         return $this->hasMany(Industry_Profile::class);
     }
+    public function send(){
+        return $this->belongsToMany(RecruitmentNews::class, 'sending_details', 'profile_id', 'recruitment_news_id')
+                    ->withPivot('senddate', 'status');
+    }
     protected $fillable=[
         'fullname',
         'email',
