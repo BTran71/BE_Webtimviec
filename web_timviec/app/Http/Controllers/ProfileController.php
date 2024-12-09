@@ -25,6 +25,37 @@ use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
+    public function getProfile(){
+        $user=Auth::guard('candidate')->user();
+        $profile = Profile::with([
+            'work_ex',
+            'reference',
+            'academy',
+            'languageDetails',
+            'information_Details',
+            'workplaceDetails',
+            'industries',
+        ])->where('candidate_id', $user->id)->first();
+        if ($profile && $profile->image) {
+            $profile->image_url = asset('storage/' . $profile->image); // Tạo URL từ đường dẫn
+        } else {
+            $profile->image_url = null; // Nếu không có hình ảnh, trả về null
+        }
+        $profile->day_ofbirth= Carbon::parse($profile->day_ofbirth)->format('d-m-Y');
+        foreach ($profile->work_ex as $item) {
+            $item->start_time = Carbon::parse($item->start_time)->format('d-m-Y');
+            $item->end_time = Carbon::parse($item->end_time)->format('d-m-Y');
+        }
+        foreach ($profile->academy as $item) {
+            $item->start_time = Carbon::parse($item->start_time)->format('d-m-Y');
+            $item->end_time = Carbon::parse($item->end_time)->format('d-m-Y');
+        }
+        if (!$profile) {
+            return response()->json(['error' => 'Hồ sơ không tồn tại.'], 404);
+        }
+    
+        return response()->json($profile, 200);
+    }
     public function addProfile(Request $request){
         $candidate = Auth::guard('candidate')->user(); // Token xác thực sẽ trả về ứng viên đăng nhập
         // Kiểm tra xem ứng viên đã có hồ sơ chưa
@@ -66,7 +97,7 @@ class ProfileController extends Controller
             'languageDetails' => 'nullable|array',
             'languageDetails.*.level'=>'required|regex:/^[^0-9]*$/|max:255',
         ]);
-        $day_ofbirth = Carbon::createFromFormat('d-m-Y',$data['day_ofbirth'])->format('Y-m-d');
+        $day_ofbirth = Carbon::createFromFormat('d-m-Y',$data['day_ofbirth']);
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -106,7 +137,7 @@ class ProfileController extends Controller
                 if ($request->has('work_ex')) {
                    
                     foreach ($data['work_ex'] as $work) {
-                        $starttime = Carbon::createFromFormat('d-m-Y', $work['start_time'])->format('Y-m-d');
+                        $starttime = Carbon::createFromFormat('d-m-Y', $work['start_time']);
                         $endtime = isset($work['end_time']) ? Carbon::createFromFormat('d-m-Y', $work['end_time'])->format('Y-m-d') : null;
                         $workex=new Workexperience();
                         $workex->company_name=$work['company_name'];
@@ -121,7 +152,7 @@ class ProfileController extends Controller
                 }
                 if ($request->has('reference')) {
                     foreach ($request->reference as $ref) {
-                         $profile->reference()->create($ref);
+                        $profile->reference()->create($ref);
                     }
                 }
     
@@ -150,7 +181,7 @@ class ProfileController extends Controller
                         if($it){
                             $profile->information_Details()->create($info);
                         }  
-                    } 
+                    }
                 }
                 if ($request->has('workplaceDetails')) {
                     foreach ($request->workplaceDetails as $workplace) {

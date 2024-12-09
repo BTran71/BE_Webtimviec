@@ -13,7 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('sending_details', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('recruitment_news_id'); 
+            $table->foreign('recruitment_news_id')->references('id')->on('recruitment_news')->onDelete('cascade');
+            $table->unsignedBigInteger('profile_id'); 
+            $table->foreign('profile_id')->references('id')->on('profile')->onDelete('cascade');
+            $table->date('senddate');
+            $table->string('status')->default('Đã gửi');
+            $table->timestamps();
+        });
     }
 
     /**
