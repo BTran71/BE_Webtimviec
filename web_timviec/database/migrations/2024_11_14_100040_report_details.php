@@ -13,7 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('report_details', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('report_id'); 
+            $table->foreign('report_id')->references('id')->on('report_information')->onDelete('cascade');
+            $table->unsignedBigInteger('sending_details_id'); 
+            $table->foreign('sending_details_id')->references('id')->on('sending_details')->onDelete('cascade');
+            $table->timestamps();
+        });
     }
 
     /**

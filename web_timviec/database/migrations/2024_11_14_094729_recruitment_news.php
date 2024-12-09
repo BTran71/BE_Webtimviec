@@ -19,12 +19,12 @@ return new class extends Migration
             $table->text('describe');
             $table->date('posteddate');
             $table->text('benefit');
-            $table->decimal('salary');
+            $table->decimal('salary', 10, 2);
             $table->date('deadline');
             $table->string('status');
             $table->string('experience');
             $table->text('skills');
-            $table->decimal('quantity');
+            $table->decimal('quantity', 10, 2);
             $table->string('workingmodel');
             $table->string('qualifications');
             $table->text('requirements');
@@ -33,7 +33,12 @@ return new class extends Migration
             $table->foreign('employer_id')->references('id')->on('employer_account')->onDelete('cascade');
             $table->unsignedBigInteger('industry_id'); 
             $table->foreign('industry_id')->references('id')->on('industry')->onDelete('cascade');
+            $table->unsignedBigInteger('package_id')->nullable(); 
+            $table->foreign('package_id')->references('id')->on('job_posting_packages')->onDelete('cascade');
+            $table->unsignedBigInteger('invoice_id')->nullable(); 
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $table->timestamps();
+            
         });
     }
 

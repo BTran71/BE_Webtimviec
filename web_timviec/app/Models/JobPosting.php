@@ -15,8 +15,8 @@ class JobPosting extends Model
         'price',
         'describe',
     ];
-    // public function news()
-    // {
-    //     return $this->hasMany(::class);
-    // }
+    public function news()
+    {
+        return $this->hasMany(RecruitmentNews::class);
+    }
 }

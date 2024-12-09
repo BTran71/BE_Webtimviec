@@ -64,4 +64,5 @@ class Employer extends Model implements AuthenticatableContract
     public function recruitmentNews(){
         return $this->hasMany(RecruitmentNews::class);
     }
+    
 }

@@ -170,6 +170,7 @@ sửa
 
     put('/candidate/profile/lock'): chuyển trạng thái của profile nếu 0 thì là khóa hồ sơ còn 1 là không khóa
 
+    //api kinh nghiệm
     get('/candidate/getWorkExperience');
     post('/candidate/addWorkExperience');
     put('/candidate/updateWorkExperience/{id}');
@@ -210,6 +211,9 @@ sửa
     post('/candidate/addWorkplaceDetails');
     put('/candidate/updateWorkplaceDetails/{id}');
     delete('/candidate/deleteWorkplaceDetails/{id});
+
+    //api tin tuyển dụng
+    post('/search'): tìm kiếm theo title
 
 
 

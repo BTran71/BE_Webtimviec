@@ -22,7 +22,7 @@ return new class extends Migration
             $table->tinyInteger('gender')->default(0);
             $table->text('skills');
             $table->date('day_ofbirth');
-            $table->decimal('salary');
+            $table->decimal('salary', 10, 2);
             $table->string('experience');
             $table->string('address');
             $table->tinyInteger('isLock')->default(0);

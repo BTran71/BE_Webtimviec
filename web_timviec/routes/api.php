@@ -17,6 +17,9 @@ use App\Http\Controllers\ITDetailsController;
 use App\Http\Controllers\LanguageDetailsController;
 use App\Http\Controllers\IndustryDetailsController;
 use App\Http\Controllers\AcademyController;
+use App\Http\Controllers\RecruitmentNewsController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SendController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,7 +64,8 @@ Route::get('/admin/getIndustry',[IndustryController::class,'getAllIndustry']);
 Route::get('/admin/getWorkplace',[WorkplaceController::class,'getAllWorkplace']);
 Route::get('/admin/getLanguage',[LanguageController::class,'getAllLanguage']);
 Route::get('/admin/getIT',[ITController::class,'getAllIT']);
-//api nơi làm việc
+//api tìm kiếm
+Route::post('/search',[RecruitmentNewsController::class,'searchNews']);
 
 Route::middleware('role:admin')->group(function () {
     //khóa tài khoản (các api liên quan đến acc employer)
@@ -103,9 +107,9 @@ Route::middleware('role:admin')->group(function () {
 });
 
 Route::middleware('role:employer')->group(function () {
-    Route::post('/employer/add',[ProfileController::class,'addProfile']);
-    Route::put('/employer/lock',[ProfileController::class,'changeLock']);
-    Route::put('/employer/update',[ProfileController::class,'updateProfile']);
+    Route::post('/employer/add',[RecruitmentNewsController::class,'addRecruitmentNews']);
+    // Route::put('/employer/lock',[ProfileController::class,'changeLock']);
+    // Route::put('/employer/update',[ProfileController::class,'updateProfile']);
     
     // Route::get('/employer/dashboard', [EmployerController::class, 'dashboard']);
         // Các route khác cho employer
@@ -113,9 +117,10 @@ Route::middleware('role:employer')->group(function () {
 
 Route::middleware('role:candidate')->group(function () {
     //Route::get('/candidate/dashboard', [CandidateController::class, 'dashboard']);
+    Route::post('candidate/profile/get',[ProfileController::class,'getProfile']);
     Route::post('/candidate/profile/add',[ProfileController::class,'addProfile']);
     Route::put('/candidate/profile/lock',[ProfileController::class,'changeLock']);
-    Route::put('/candidate/profile/update',[ProfileController::class,'updateProfile']);
+    Route::post('/candidate/profile/update_method=PUT',[ProfileController::class,'updateProfile']);
     
     //api kinh nghiệm
     Route::get('/candidate/getWorkExperience',[WorkexperienceController::class,'getWorkExperience']);
@@ -158,5 +163,13 @@ Route::middleware('role:candidate')->group(function () {
     Route::post('/candidate/addWorkplaceDetails',[WorkplaceDetailsController::class,'addWorkplaceDetails']);
     Route::put('/candidate/updateWorkplaceDetails/{id}',[WorkplaceDetailsController::class,'updateWorkplaceDetails']);
     Route::delete('/candidate/deleteWorkplaceDetails/{id}',[WorkplaceDetailsController::class,'deleteWorkplaceDetails']);
+
+    //api gửi
+    Route::post('/candidate/send/{id}',[SendController::class,'sendProfile']);
 });
+//api lọc tin
+Route::get('/filter-jobs', [RecruitmentNewsController::class, 'filterJobs']);
+Route::get('/active-recruitments', [RecruitmentNewsController::class, 'showActiveRecruitments']);
+//cổng thanh toán
+Route::post('/payment', [PaymentController::class, 'vnpayPayment']);
 
