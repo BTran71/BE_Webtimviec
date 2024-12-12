@@ -215,6 +215,25 @@ sửa
     //api tin tuyển dụng
     post('/search'): tìm kiếm theo title
 
+    //api lọc tin
+    get('/filter-jobs');
+     
+     lọc trong raw theo 
+     vd:
+    "industry_id": 1:id ngành nghề
+    "salary_min": 5000,
+    "salary_max": 15000,
+    workplace_id:1: nơi làm việc
+
+    //api lấy các tin chưa đến hạng
+    get('/active-recruitments')
+
+    //api lấy tin tuyển dụng theo id
+    get('/get/news/{id}');
+
+    //api thêm tin tuyển dụng
+    post('/employer/add');
+
 
 
 

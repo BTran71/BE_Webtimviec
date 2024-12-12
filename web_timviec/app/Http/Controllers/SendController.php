@@ -9,6 +9,7 @@ use App\Models\Sending;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Mail\ApplicationStatusMail;
 
 
 class SendController extends Controller
@@ -34,5 +35,40 @@ class SendController extends Controller
             'news'=>$data->title,
             'profile'=>$data->send,
         ]);
+    }
+    public function updateStatus(Request $request, $id)
+    {
+        // Validate input
+        $request->validate([
+            'status' => 'required|in:accepted,rejected',
+            'interview_date' => 'required_if:status,accepted|date|after:now',
+        ]);
+
+        // Find sending details record
+        $sendingDetails = Sending::findOrFail($id);
+
+        // Fetch associated profile
+        $profile = Profile::findOrFail($sendingDetails->profile_id);
+
+        // Update the status
+        $status = $request->input('status');
+        $sendingDetails->status = $status;
+        $sendingDetails->save();
+
+        // Fetch email details
+        $applicantEmail = $profile->email; // Ensure the `email` field exists in the `profiles` table
+        $applicantName = $profile->name;  // Ensure the `name` field exists in the `profiles` table
+        $jobTitle = $sendingDetails->news->title; // Assuming `news` relationship exists in `SendingDetails`
+
+        $interviewDate = $status === 'accepted' ? Carbon::parse($request->input('interview_date'))->format('d-m-Y H:i') : null;
+        // Send email to the applicant
+        Mail::to($applicantEmail)->send(new ApplicationStatusMail($status, $jobTitle, $applicantName,$interviewDate));
+
+        // Return response
+        return response()->json([
+            'message' => 'Application status updated and email sent successfully.',
+            'status' => $sendingDetails->status,
+            'interview_date' => $interviewDate,
+        ], 200);
     }
 }

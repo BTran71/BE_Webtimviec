@@ -16,11 +16,12 @@ use App\Models\RecruitmentNews;
 use App\Models\WorkplaceNews;
 use Illuminate\Support\Facades\Log;
 use App\Models\Workplace;
+use App\Mail\ApplicationStatusMail;
 
 class RecruitmentNewsController extends Controller
 {
     public function addRecruitmentNews(Request $request){
-        $user=Auth::guard('employer')->user();
+        
         // $invoice = Invoice::where('employer_id', $user->id)
         //         ->where('status', 'paid')
         //         ->latest()
@@ -34,6 +35,7 @@ class RecruitmentNewsController extends Controller
         // if ($invoice->status !== 'paid') {
         //     return response()->json(['error' => 'Thanh toán chưa thành công'], 400);
         // }
+        $user=Auth::guard('employer')->user();
         $data=$request->all();
         $validator=Validator::make($data,[
             'title'=>'required|regex:/^[^0-9]*$/|max:255',
@@ -43,16 +45,16 @@ class RecruitmentNewsController extends Controller
             'salary'=>'required|numeric',
             'deadline'=>'required|date|date_format:d-m-Y|after:posteddate',
             'experience'=>'required|string|max:255',
-            'skills'=>'required|string',
+            // 'skills'=>'required|string',
             'quantity'=>'required|numeric',
-            'workingmodel',
+            'workingmodel'=>'required|string',
             'qualifications'=>'required|string',
             'requirements'=>'required|string',
             'workplacenews'=>'required',
             'workplacenews.*.homeaddress'=>'required|string',
         ]);
-        $postdate=Carbon::now()->format('Y-m-d H:i:s');
-        $deadline=Carbon::createFromFormat('d-m-Y',$data['deadline']);
+        $data['posteddate']=Carbon::now()->format('Y-m-d');
+        $deadline=Carbon::createFromFormat('d-m-Y',$data['deadline'])->format('Y-m-d');
         if($validator->failed()){
             return response()->json([
                 'success' => false,
@@ -65,14 +67,14 @@ class RecruitmentNewsController extends Controller
                 $news=new RecruitmentNews();
                 $news->title=$data['title'];
                 $news->describe=$data['describe'];
-                $news->posteddate=$postdate;
+                $news->posteddate=$data['posteddate'];
                 $news->benefit=$data['benefit'];
                 $news->salary=$data['salary'];
                 $news->deadline=$deadline;
                 $news->experience=$data['experience'];
-                $news->skills=$data['skills'];
+                // $news->skills=$data['skills'];
                 $news->quantity=$data['quantity'];
-                $news->status=$data['status'];
+                // $news->status=$data['status'];
                 $news->workingmodel=$data['workingmodel'];
                 $news->qualifications=$data['qualifications'];
                 $news->requirements=$data['requirements'];
@@ -86,12 +88,12 @@ class RecruitmentNewsController extends Controller
                         $news->workplacenews()->create($workplace);
                     }
                 }
+                DB::commit();
                 return response()->json(['message' => 'Tin tuyển dụng đã được tạo thành công', 'data' => $news], 201);
-                DB::commit(); // Xác nhận giao dịch
             } catch (\Throwable $th) {
                 DB::rollBack(); // Rollback giao dịch nếu có lỗi
                 // Log lỗi nếu cần
-                \Log::error('Error creating recruitment news: ' . $th->getMessage());
+                Log::error('Error creating recruitment news: ' . $th->getMessage());
                 // Thực hiện xử lý lỗi hoặc trả về thông báo
                 return response()->json(['error' => $th->getMessage()], 500);
             }
@@ -129,6 +131,11 @@ class RecruitmentNewsController extends Controller
         if ($request->has('deadline') && !empty($request->deadline)) {
             $query->where('deadline', '>=', Carbon::now());
         }
+        if ($request->has('workplace_id') && !empty($request->workplace_id)) {
+            $query->whereHas('workplacenews', function($query) use ($request) {
+                $query->where('workplace_id', $request->workplace_id);
+            });
+        }
         $recruitmentNews = $query->get();
         // Trả về kết quả dưới dạng JSON (nếu làm API)
         return response()->json($recruitmentNews,200);
@@ -155,19 +162,93 @@ class RecruitmentNewsController extends Controller
             return response()->json(['message' => 'Hồ sơ của bạn chưa được cập nhật.'], 400);
         }
         // Lọc tin tuyển dụng phù hợp
-        $matchingJobs = RecruitmentNews::query()->where('deadline', '>=', Carbon::now())->where(function ($query) use ($profile) {
-            $query->where('required_skills', 'LIKE', "%{$profile->skills}%") // Khớp kỹ năng
-                  ->orWhere('experience_required', '<=', $profile->experience) // Kinh nghiệm
-                  ->orWhere('salary', '>=', $profile->desired_salary) // Mức lương mong muốn
-                  ->orWhere('location','like',"%{$profile->desired_location}%"); // Địa điểm làm việc
+        $matchingJobs = RecruitmentNews::query()->where('deadline', '>=', Carbon::now()) // Chỉ lấy tin còn hạn
+        ->where(function ($query) use ($profile) {
+            // So khớp theo mức lương
+        $query->where('salary', '>=', $profile->salary);
+            // So khớp theo kinh nghiệm
+        $query->orWhere('experience', '<=', $profile->experience);
+        // So khớp theo nơi làm việc
+        $query->orWhereHas('workplacenews', function ($subQuery) use ($profile) {
+            $subQuery->whereIn('workplace_id', $profile->workplaceDetails->pluck('workplace_id'));
+        });
+        // So khớp theo ngành nghề
+        $query->orWhereHas('industry', function ($subQuery) use ($profile) {
+            $subQuery->whereIn('industry_id', $profile->industries->pluck('industry_id'));
+            });
         })->get();
         return response()->json($matchingJobs,200);
     }
     public function getNews($id){
-        $data=RecruitmentNews::where('id',$id)->where('deadline','>=',Carbon::now())->get();
+        $data=RecruitmentNews::with('employer')->where('id',$id)->where('deadline','>=',Carbon::now())->first();
         if(!$data){
             return response()->json(['error'=>'Không lấy được thông tin'],401);
         }
         return response()->json($data,200);
     }
+    public function updateNews(Request $request,$id){
+        $user=Auth::guard('employer')->user();
+        $data=$request->all();
+        $validator=Validator::make($data,[
+            'title'=>'required|regex:/^[^0-9]*$/|max:255',
+            'describe'=>'required|regex:/^[^0-9]*$/|max:255',
+            'posteddate'=>'required|date|date_format:d-m-Y',
+            'benefit'=>'required|string|max:255',
+            'salary'=>'required|numeric',
+            'deadline'=>'required|date|date_format:d-m-Y|after:posteddate',
+            'experience'=>'required|string|max:255',
+            // 'skills'=>'required|string',
+            'quantity'=>'required|numeric',
+            'workingmodel'=>'required|string',
+            'qualifications'=>'required|string',
+            'requirements'=>'required|string',
+            'workplacenews'=>'required',
+            'workplacenews.*.homeaddress'=>'required|string',
+        ]);
+        $data['posteddate']=Carbon::now()->format('Y-m-d');
+        $deadline=Carbon::createFromFormat('d-m-Y',$data['deadline'])->format('Y-m-d');
+        if($validator->failed()){
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+        else{
+            DB::beginTransaction();
+            try {
+                $news->title=$data['title'];
+                $news->describe=$data['describe'];
+                $news->posteddate=$data['posteddate'];
+                $news->benefit=$data['benefit'];
+                $news->salary=$data['salary'];
+                $news->deadline=$deadline;
+                $news->experience=$data['experience'];
+                // $news->skills=$data['skills'];
+                $news->quantity=$data['quantity'];
+                // $news->status=$data['status'];
+                $news->workingmodel=$data['workingmodel'];
+                $news->qualifications=$data['qualifications'];
+                $news->requirements=$data['requirements'];
+                $news->employer_id = $user->id;
+                $news->industry_id=$data['industry_id'];
+                $news->save();
+               
+                foreach ($request->workplacenews as $workplace) {
+                    $info=Workplace::where('id',$workplace['workplace_id'])->first();
+                    if($info){
+                        $news->workplacenews()->create($workplace);
+                    }
+                }
+                DB::commit();
+                return response()->json(['message' => 'Tin tuyển dụng đã được tạo thành công', 'data' => $news], 201);
+            } catch (\Throwable $th) {
+                DB::rollBack(); // Rollback giao dịch nếu có lỗi
+                // Log lỗi nếu cần
+                Log::error('Error creating recruitment news: ' . $th->getMessage());
+                // Thực hiện xử lý lỗi hoặc trả về thông báo
+                return response()->json(['error' => $th->getMessage()], 500);
+            }
+        }
+    }
+    
 }
