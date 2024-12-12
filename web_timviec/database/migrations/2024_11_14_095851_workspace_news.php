@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('workspace_news', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('workplace_id'); 
+            $table->unsignedBigInteger('workplace_id');
             $table->foreign('workplace_id')->references('id')->on('workplace')->onDelete('cascade');
             $table->unsignedBigInteger('recruitment_news_id'); 
             $table->foreign('recruitment_news_id')->references('id')->on('recruitment_news')->onDelete('cascade');

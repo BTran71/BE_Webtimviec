@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('company_name');
-            $table->integer('phone_number');
+            $table->string('phone_number');
             $table->string('position');
             $table->unsignedBigInteger('profile_id'); 
             $table->foreign('profile_id')->references('id')->on('profile')->onDelete('cascade');

@@ -21,9 +21,9 @@ return new class extends Migration
             $table->text('benefit');
             $table->decimal('salary', 10, 2);
             $table->date('deadline');
-            $table->string('status');
+            // $table->string('status');
             $table->string('experience');
-            $table->text('skills');
+            // $table->text('skills');
             $table->decimal('quantity', 10, 2);
             $table->string('workingmodel');
             $table->string('qualifications');

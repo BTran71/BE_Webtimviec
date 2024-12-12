@@ -113,6 +113,8 @@ Route::middleware('role:employer')->group(function () {
     
     //api lấy thông tin hồ sơ
     Route::get('/employer/getProfile/{id}',[SendController::class,'getSendProfile']);
+    Route::post('employer/send/{id}',[SendController::class,'updateStatus']);
+    
 });
 
 Route::middleware('role:candidate')->group(function () {
@@ -166,10 +168,16 @@ Route::middleware('role:candidate')->group(function () {
 
     //api gửi
     Route::post('/candidate/send/{id}',[SendController::class,'sendProfile']);
+
+    //api lấy thông tin tuyển dụng theo hồ sơ
+    Route::get('candidate/getNews',[RecruitmentNewsController::class,'getMatchingJobs']);
 });
 //api lọc tin
 Route::get('/filter-jobs', [RecruitmentNewsController::class, 'filterJobs']);
 Route::get('/active-recruitments', [RecruitmentNewsController::class, 'showActiveRecruitments']);
 //cổng thanh toán
 Route::post('/payment', [PaymentController::class, 'momocheckout']);
+
+//api lấy tin tuyển dụng
+Route::get('/get/news/{id}',[RecruitmentNewsController::class,'getNews']);
 
