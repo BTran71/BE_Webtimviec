@@ -20,6 +20,7 @@ use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\RecruitmentNewsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SendController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +69,8 @@ Route::get('/admin/getIT',[ITController::class,'getAllIT']);
 Route::post('/search',[RecruitmentNewsController::class,'searchNews']);
 
 Route::middleware('role:admin')->group(function () {
+    //chỉnh sửa thông tin tài khoản nhà tuyển dụng
+    Route::put('/admin/updateacc',[AdminController::class,'updateAdmin']);
     //khóa tài khoản (các api liên quan đến acc employer)
     Route::put('/admin/{id}/changeLock',[AuthController::class,'changeLock']);
     Route::get('/admin/employer',[AuthController::class,'getAllEmployer']);
@@ -107,7 +110,9 @@ Route::middleware('role:admin')->group(function () {
 });
 
 Route::middleware('role:employer')->group(function () {
+    Route::post('/employer/updateacc_method=PUT',[AdminController::class,'updateEmployer']);
     Route::post('/employer/add',[RecruitmentNewsController::class,'addRecruitmentNews']);
+    Route::put('/employer/update/{id}',[RecruitmentNewsController::class,'updateNews']);
     // Route::put('/employer/lock',[ProfileController::class,'changeLock']);
     // Route::put('/employer/update',[ProfileController::class,'updateProfile']);
     
@@ -119,6 +124,8 @@ Route::middleware('role:employer')->group(function () {
 
 Route::middleware('role:candidate')->group(function () {
     //Route::get('/candidate/dashboard', [CandidateController::class, 'dashboard']);
+    Route::post('/candidate/updateacc_method=PUT',[AdminController::class,'updateCandidate']);
+
     Route::post('candidate/profile/get',[ProfileController::class,'getProfile']);
     Route::post('/candidate/profile/add',[ProfileController::class,'addProfile']);
     Route::put('/candidate/profile/lock',[ProfileController::class,'changeLock']);

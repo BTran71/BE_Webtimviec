@@ -64,14 +64,15 @@ class ProfileController extends Controller
         $validator = Validator::make($data, [
             'fullname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:profile',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg',
             'phone_number'=>'required|regex:/^0[0-9]{9}$/',
             'gender'=>'required|in:Nam,Nữ',
             'skills'=>'nullable|string',
             'day_ofbirth'=>'required|date|date_format:d-m-Y',
             'salary'=>'nullable|numeric|min:0',
             'experience'=>'nullable|string|min:0',
-            'address'=>'required|string|max:255',
+            'address'=>'required|string',
+            'rank'=>'required|string',
 
             // Validation cho bảng liên quan
             'work_ex' => 'nullable|array',
@@ -131,6 +132,7 @@ class ProfileController extends Controller
                 $profile->experience=$data['experience'];
                 $profile->address=$data['address'];
                 $profile->isLock=0;
+                $profile->rank=$data['rank'];
                 $profile->candidate_id=$candidate->id;
                 $profile->save();
                 // Tạo các bảng liên quan
@@ -225,14 +227,15 @@ class ProfileController extends Controller
                 'max:255',
                 Rule::unique('profile', 'email')->ignore($profile->id),
             ],
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg',
             'phone_number'=>'required|regex:/^0[0-9]{9}$/',
             'gender'=>'required|in:Nam,Nữ',
             'skills'=>'nullable|string',
             'day_ofbirth'=>'required|date|date_format:d-m-Y',
             'salary'=>'nullable|numeric|min:0',
             'experience'=>'nullable|string|min:0',
-            'address'=>'required|string|max:255',
+            'address'=>'required|string',
+            'rank'=>'required,string',
         ]);
         $imagePath = null;
         if ($request->hasFile('image')) {
@@ -261,6 +264,7 @@ class ProfileController extends Controller
                 $profile->salary=$data['salary'];
                 $profile->experience=$data['experience'];
                 $profile->address=$data['address'];
+                $profile->rank=$data['rank'];
                 if ($request->hasFile('image')) {
                     // Lấy đường dẫn của ảnh cũ
                     $oldImagePath = $profile->image;
