@@ -233,7 +233,17 @@ sửa
 
     //api thêm tin tuyển dụng
     post('/employer/add');
-
+	key: các key có sẵn trong bảng recruitmentsnews và key các bảng đi kèm là 
+	{bảng nghề nghiệp
+	industry[0][industry_id]
+	bảng nơi làm việc
+	workplacenews[0][workplace_id]
+	workplacenews[0][homeaddress]
+	} 2 bảng này bắt buộc phải có hỏi khi thêm ông có làm thêm được nhiều bảng phụ không vậy
+	bảng ngôn ngữ
+	language[0][language_id]
+	bảng tin học
+	information[0][it_id]
 
 
 

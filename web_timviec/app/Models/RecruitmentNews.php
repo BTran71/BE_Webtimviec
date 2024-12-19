@@ -23,16 +23,13 @@ class RecruitmentNews extends Model
         'workingmodel',
         'qualifications',//bằng cấp
         'requirements',
+        'rank',//cấp độ
         'employer_id',
-        'industry_id',
         'package_id',
         'invoice_id',
     ];
     public function employer(){
         return $this->belongsTo(Employer::class);
-    }
-    public function industry(){
-        return $this->belongsTo(Industry::class);
     }
     public function jobposting(){
         return $this->belongsTo(JobPosting::class);
@@ -42,6 +39,15 @@ class RecruitmentNews extends Model
     }
     public function workplacenews(){
         return $this->hasMany(WorkplaceNews::class);
+    }
+    public function industry(){
+        return $this->hasMany(IndustryNews::class);
+    }
+    public function language(){
+        return $this->hasMany(LanguageNews::class);
+    }
+    public function information(){
+        return $this->hasMany(InfoNews::class);
     }
     public function send(){
         return $this->belongsToMany(Profile::class, 'sending_details', 'recruitment_news_id', 'profile_id')
