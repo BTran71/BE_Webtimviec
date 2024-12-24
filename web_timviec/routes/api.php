@@ -177,7 +177,7 @@ Route::middleware('role:candidate')->group(function () {
     Route::post('/candidate/send/{id}',[SendController::class,'sendProfile']);
 
     //api lấy thông tin tuyển dụng theo hồ sơ
-    Route::get('candidate/getNews',[RecruitmentNewsController::class,'getMatchingJobs']);
+    Route::post('candidate/getNews',[RecruitmentNewsController::class,'getMatchingJobs']);
 });
 //api lọc tin
 Route::get('/filter-jobs', [RecruitmentNewsController::class, 'filterJobs']);

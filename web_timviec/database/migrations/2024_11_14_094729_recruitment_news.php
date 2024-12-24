@@ -32,9 +32,10 @@ return new class extends Migration
             $table->tinyInteger('isActive')->default(1);
             $table->unsignedBigInteger('employer_id'); 
             $table->foreign('employer_id')->references('id')->on('employer_account')->onDelete('cascade');
+            $table->unsignedBigInteger('package_id'); 
             $table->foreign('package_id')->references('id')->on('job_posting_packages')->onDelete('cascade');
-            $table->unsignedBigInteger('invoice_id')->nullable(); 
-            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
+            // $table->unsignedBigInteger('invoice_id')->nullable(); 
+            // $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $table->timestamps();
             
         });

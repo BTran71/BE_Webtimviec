@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\ApplicationStatusMail;
+use Illuminate\Support\Facades\Mail;
 
 
 class SendController extends Controller

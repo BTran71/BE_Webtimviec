@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('candidate_id'); // Khóa ngoại tới bảng users
             $table->unsignedBigInteger('employer_id');
             $table->foreign('candidate_id')->references('id')->on('candidate')->onDelete('cascade');
-            $table->foreign('employer_id')->references('id')->on('employer')->onDelete('cascade');
+            $table->foreign('employer_id')->references('id')->on('employer_account')->onDelete('cascade');
             $table->timestamps();
         });
     }
