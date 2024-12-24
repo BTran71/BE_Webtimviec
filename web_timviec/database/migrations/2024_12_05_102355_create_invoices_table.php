@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamps(); // Tự động thêm created_at và updated_at
 
             // Nếu cần liên kết với bảng users
-            $table->foreign('employer_id')->references('id')->on('employer')->onDelete('cascade');
+            $table->foreign('employer_id')->references('id')->on('employer_account')->onDelete('cascade');
         });
     }
 
