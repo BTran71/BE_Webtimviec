@@ -168,12 +168,6 @@ class RecruitmentNewsController extends Controller
         $query->whereHas('employer', function($query) use ($request) {
             $query->where('is_Lock',1);
         });
-        if ($request->has('industry_id') && !empty($request->workplace_id)) {
-            $query->whereHas('industry', function($query) use ($request) {
-                $query->where('industry_id', $request->industry_id);
-            });
-        }
-
         // Lọc theo nơi làm việc (working model)
         if ($request->has('workingmodel') && !empty($request->workingmodel)) {
             $query->where('workingmodel', $request->workingmodel);
@@ -201,7 +195,11 @@ class RecruitmentNewsController extends Controller
                 $query->where('workplace_id', $request->workplace_id);
             });
         }
-
+        if ($request->has('industry_id') && !empty($request->industry_id)) {
+            $query->whereHas('industry', function($query) use ($request) {
+                $query->where('industry_id', $request->industry_id);
+            });
+        }
         // Lấy kết quả
         $recruitmentNews = $query->get();
 
