@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('profile_id'); 
             $table->foreign('profile_id')->references('id')->on('profile')->onDelete('cascade');
             $table->date('senddate');
+            $table->string('name');
             $table->string('status')->default('Đã gửi');
             $table->timestamps();
         });
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('sending_details');
     }
 };

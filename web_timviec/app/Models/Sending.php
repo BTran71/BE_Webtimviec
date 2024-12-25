@@ -14,6 +14,7 @@ class Sending extends Model
         'profile_id',
         'senddate',
         'status',
+        'name'
     ];
     public function news(){
         return $this->belongsToMany(RecruitmentNews::class);

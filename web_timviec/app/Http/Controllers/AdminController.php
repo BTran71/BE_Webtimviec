@@ -10,6 +10,8 @@ use Yoeunes\Toastr\Facades\Toastr;
 use App\Models\Admin;
 use App\Models\Employer;
 use App\Models\Candidate;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -29,13 +31,24 @@ class AdminController extends Controller
             'password'=>'nullable|string',
         ]);
         $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('profiles', 'public');
-        }
         $user->email=$data['email'];
-        $user->image=$imagePath;
         $user->name=$data['name'];
         $user->password=Hash::make($data['password']);
+        if ($request->hasFile('image')) {
+            // Lấy đường dẫn của ảnh cũ
+            $oldImagePath = $user->image;
+        
+            // Lưu ảnh mới
+            $imagePath = $request->file('image')->store('profiles', 'public');
+        
+            // Xóa ảnh cũ nếu có
+            if ($oldImagePath) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
+        
+            // Cập nhật ảnh mới vào profile
+            $user->image = $imagePath;
+        }
         $user->save();
         return response()->json(['message'=>'Sửa thành công'],200);
     }
@@ -76,29 +89,58 @@ class AdminController extends Controller
             ],
             'image' => 'nullable|image|mimes:jpeg,png,jpg',
             'password'=>'nullable|string',
+            'discription'=>'nullable|string',
         ]);
         $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('profiles', 'public');
-        }
         $user->email=$data['email'];
-        $user->image=$imagePath;
-        $user->company_name=$data['name'];
+        $user->company_name=$data['company_name'];
         $user->password=Hash::make($data['password']);
         $user->phone_number=$data['phone_number'];
         $user->address=$data['address'];
         $user->company_size=$data['company_size'];
+        $user->discription=$data['discription'];
+        if ($request->hasFile('image')) {
+            // Lấy đường dẫn của ảnh cũ
+            $oldImagePath = $user->image;
+        
+            // Lưu ảnh mới
+            $imagePath = $request->file('image')->store('profiles', 'public');
+        
+            // Xóa ảnh cũ nếu có
+            if ($oldImagePath) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
+        
+            // Cập nhật ảnh mới vào profile
+            $user->image = $imagePath;
+        }
         $user->save();
         return response()->json(['message'=>'Sửa thành công'],200);
     }
     public function getCandidate(){
-        
+        $user=Auth::guard('candidate')->user();
+        $info=Candidate::where('id',$user->id)->first();
+        if ($info && $info->image) {
+            $info->image_url = asset('storage/' . $info->image); // Tạo URL từ đường dẫn
+        } else {
+            $info->image_url = null; // Nếu không có hình ảnh, trả về null
+        }
+        return response()->json($info,200);
     }
     public function getEmployer(){
-        
+        $user=Auth::guard('employer')->user();
+        $info=Employer::where('id',$user->id)->first();
+        if ($info && $info->image) {
+            $info->image_url = asset('storage/' . $info->image); // Tạo URL từ đường dẫn
+        } else {
+            $info->image_url = null; // Nếu không có hình ảnh, trả về null
+        }
+        return response()->json($info,200);
     }
     public function getAdmin(){
-        
+        $user=Auth::guard('admin')->user();
+        $info=Admin::where('id',$user->id)->first();
+        return response()->json($info,200);
     }
     public function follow($id){
         $user=Auth::guard('candidate')->user();

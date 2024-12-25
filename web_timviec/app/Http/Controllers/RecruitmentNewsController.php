@@ -172,6 +172,9 @@ class RecruitmentNewsController extends Controller
         if ($request->has('workingmodel') && !empty($request->workingmodel)) {
             $query->where('workingmodel', $request->workingmodel);
         }
+        if ($request->has('qualifications') && !empty($request->qualifications)) {
+            $query->where('qualifications', $request->qualifications);
+        }
         if ($request->has('rank') && !empty($request->rank)) {
             $query->where('rank', $request->rank);
         }
@@ -210,59 +213,89 @@ class RecruitmentNewsController extends Controller
     {
         $user = Auth::guard('candidate')->user();
         $profile = $user->profile;
-    
+
         if (!$profile) {
             return response()->json(['message' => 'Hồ sơ của bạn chưa được cập nhật.'], 400);
         }
-    
+
         // Lọc tin tuyển dụng phù hợp
         $matchingJobs = RecruitmentNews::query()
             ->where('deadline', '>=', Carbon::now()) // Chỉ lấy tin còn hạn
             ->where(function ($query) use ($profile) {
-                // Khởi tạo biến đếm số lượng điều kiện khớp
-                $matchCount = 0;
-                
                 // So khớp theo mức lương
                 $query->where('salary', '>=', $profile->salary)
-                      ->increment('match_count'); // Tăng biến match_count nếu khớp
-    
-                // So khớp theo kinh nghiệm
-                $query->orWhere('experience', '<=', $profile->experience)
-                      ->increment('match_count'); // Tăng biến match_count nếu khớp
-                //So sánh theo nơi làm việc
-                $query->orWhere('workingmodel', $profile->workingmodel)
-                        ->increment('match_count'); // Tăng biến match_count nếu khớp
-                //so sánh theo cấp bật
-                $query->orWhere('rank', $profile->rank)
-                        ->increment('match_count'); // Tăng biến match_count nếu khớp
-                // So khớp theo nơi làm việc
-                $query->orWhereHas('workplacenews', function ($subQuery) use ($profile) {
-                    $subQuery->whereIn('workplace_id', $profile->workplaceDetails->pluck('workplace_id'));
-                })
-                ->increment('match_count'); // Tăng biến match_count nếu khớp
-                // So khớp theo ngành nghề
-                $query->orWhereHas('industry', function ($subQuery) use ($profile) {
-                    $subQuery->whereIn('industry_id', $profile->industries->pluck('industry_id'));
-                })
-                ->increment('match_count'); // Tăng biến match_count nếu khớp
+                    ->orWhere('experience', '<=', $profile->experience)
+                    ->orWhere('workingmodel', $profile->workingmodel)
+                    ->orWhere('rank', $profile->rank)
+                    ->orWhere('skills', $profile->skills)
+                    ->orWhereHas('workplacenews', function ($subQuery) use ($profile) {
+                        $subQuery->whereIn('workplace_id', $profile->workplaceDetails->pluck('workplace_id'));
+                    })
+                    ->orWhereHas('industry', function ($subQuery) use ($profile) {
+                        $subQuery->whereIn('industry_id', $profile->industries->pluck('industry_id'));
+                    })
+                    ->orWhereHas('language', function ($subQuery) use ($profile) {
+                        $subQuery->whereIn('language_id', $profile->languageDetails->pluck('language_id'));
+                    })
+                    ->orWhereHas('information', function ($subQuery) use ($profile) {
+                        $subQuery->whereIn('it_id', $profile->information_Details->pluck('it_id'));
+                    });
+                    
             })
             // Lọc thêm các tin tuyển dụng của nhà tuyển dụng không bị khóa
             ->whereHas('employer', function ($query) {
                 $query->where('is_Lock', 1);  // Kiểm tra nhà tuyển dụng không bị khóa
             })
-            // Sắp xếp theo số lượng khớp (có thể sử dụng thêm cột 'match_count')
-            ->orderByDesc('match_count')  // Sắp xếp theo số lượng khớp từ cao xuống thấp
             ->get();
-    
+
+        // Tính số lượng khớp cho mỗi tin tuyển dụng
+        $matchingJobs = $matchingJobs->map(function ($job) use ($profile) {
+            $matchCount = 0;
+            
+            // So khớp theo mức lương
+            if ($job->salary >= $profile->salary) {
+                $matchCount++;
+            } 
+            // So khớp theo kinh nghiệm
+            if ($job->experience <= $profile->experience) {
+                $matchCount++;
+            }
+            // So khớp theo nơi làm việc
+            if ($job->workingmodel == $profile->workingmodel) {
+                $matchCount++;
+            }
+            // So khớp theo cấp bậc
+            if ($job->rank == $profile->rank) {
+                $matchCount++;
+            }
+            // So khớp theo kỹ năng
+            if ($job->skills == $profile->skills) {
+                $matchCount++;
+            }
+
+            // So khớp theo nơi làm việc
+            if ($job->workplacenews->pluck('workplace_id')->intersect($profile->workplaceDetails->pluck('workplace_id'))->isNotEmpty()) {
+                $matchCount++;
+            }
+
+            // So khớp theo ngành nghề
+            if ($job->industry->pluck('industry_id')->intersect($profile->industries->pluck('industry_id'))->isNotEmpty()) {
+                $matchCount++;
+            }
+            if ($job->language->pluck('language_id')->intersect($profile->languageDetails->pluck('language_id'))->isNotEmpty()) {
+                $matchCount++;
+            }
+            if ($job->information->pluck('it_id')->intersect($profile->information_Details->pluck('it_id'))->isNotEmpty()) {
+                $matchCount++;
+            }
+            $job->match_count = $matchCount; // Gán số lượng khớp vào cột match_count tạm thời
+            return $job;
+        });
+        // Sắp xếp theo số lượng khớp từ cao xuống thấp
+        $matchingJobs = $matchingJobs->sortByDesc('match_count');
+        // Trả về kết quả dưới dạng JSON
         return response()->json($matchingJobs, 200);
     }
-    // public function getNews($id){
-    //     $data=RecruitmentNews::with('employer')->where('id',$id)->where('deadline','>=',Carbon::now())->first();
-    //     if(!$data){
-    //         return response()->json(['error'=>'Không lấy được thông tin'],401);
-    //     }
-    //     return response()->json($data,200);
-    // }
     public function updateNews(Request $request,$id){
         $user = Auth::guard('employer')->user();
         $data = $request->all();
@@ -315,7 +348,6 @@ class RecruitmentNewsController extends Controller
                 'qualifications' => $data['qualifications'],
                 'requirements' => $data['requirements'],
                 'rank' => $data['rank'],
-                'posteddate'=>$data['posteddate'],
             ]);
             return response()->json(['message' => 'Tin tuyển dụng đã được sửa thành công', 'data' => $news], 200);
         }
