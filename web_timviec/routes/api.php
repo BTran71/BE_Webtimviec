@@ -71,6 +71,7 @@ Route::post('/search',[RecruitmentNewsController::class,'searchNews']);
 Route::middleware('role:admin')->group(function () {
     //chỉnh sửa thông tin tài khoản nhà tuyển dụng
     Route::put('/admin/updateacc',[AdminController::class,'updateAdmin']);
+    Route::post('admin/getacc',[AdminController::class,'getAdmin']);
     //khóa tài khoản (các api liên quan đến acc employer)
     Route::put('/admin/{id}/changeLock',[AuthController::class,'changeLock']);
     Route::get('/admin/employer',[AuthController::class,'getAllEmployer']);
@@ -111,6 +112,7 @@ Route::middleware('role:admin')->group(function () {
 
 Route::middleware('role:employer')->group(function () {
     Route::post('/employer/updateacc_method=PUT',[AdminController::class,'updateEmployer']);
+    Route::post('employer/getacc',[AdminController::class,'getEmployer']);
     Route::post('/employer/add',[RecruitmentNewsController::class,'addRecruitmentNews']);
     Route::put('/employer/update/{id}',[RecruitmentNewsController::class,'updateNews']);
     // Route::put('/employer/lock',[ProfileController::class,'changeLock']);
@@ -125,6 +127,7 @@ Route::middleware('role:employer')->group(function () {
 Route::middleware('role:candidate')->group(function () {
     //Route::get('/candidate/dashboard', [CandidateController::class, 'dashboard']);
     Route::post('/candidate/updateacc_method=PUT',[AdminController::class,'updateCandidate']);
+    Route::post('/candidate/getacc',[AdminController::class,'getCandidate']);
 
     Route::post('candidate/profile/get',[ProfileController::class,'getProfile']);
     Route::post('/candidate/profile/add',[ProfileController::class,'addProfile']);
@@ -177,7 +180,7 @@ Route::middleware('role:candidate')->group(function () {
     Route::post('/candidate/send/{id}',[SendController::class,'sendProfile']);
 
     //api lấy thông tin tuyển dụng theo hồ sơ
-    Route::post('candidate/getNews',[RecruitmentNewsController::class,'getMatchingJobs']);
+    Route::get('candidate/getNews',[RecruitmentNewsController::class,'getMatchingJobs']);
 });
 //api lọc tin
 Route::get('/filter-jobs', [RecruitmentNewsController::class, 'filterJobs']);

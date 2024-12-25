@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Mail;
 
 class SendController extends Controller
 {
-    public function sendProfile($id){
+    public function sendProfile(Request $request,$id){
         $user=Auth::guard('candidate')->user();
         $profile=$user->profile;
         if(!$user || !$profile){
@@ -24,6 +24,7 @@ class SendController extends Controller
         $date=Carbon::now()->format('Y-m-d H:i:s');
         $send=new Sending();
         $send->profile_id=$profile->id;
+        $send->name=$request->name;
         $send->recruitment_news_id=$id;
         $send->senddate=$date;
         $send->save();

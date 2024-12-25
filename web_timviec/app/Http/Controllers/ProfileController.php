@@ -112,7 +112,7 @@ class ProfileController extends Controller
                 // Upload ảnh nếu có
                 $imagePath = null;
                 if ($request->hasFile('image')) {
-                     $imagePath = $request->file('image')->store('profiles', 'public');
+                    $imagePath = $request->file('image')->store('profiles', 'public');
                 }
                 //tạo profile
                 $profile=new Profile();
@@ -235,12 +235,9 @@ class ProfileController extends Controller
             'salary'=>'nullable|numeric|min:0',
             'experience'=>'nullable|string|min:0',
             'address'=>'required|string',
-            'rank'=>'required,string',
+            'rank'=>'required|string',
         ]);
         $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('profiles', 'public');
-        }
         $day_ofbirth = Carbon::createFromFormat('d-m-Y',$data['day_ofbirth'])->format('Y-m-d');
         if($profile){
             if($validator->fails()){
