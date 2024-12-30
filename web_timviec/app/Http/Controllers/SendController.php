@@ -30,13 +30,38 @@ class SendController extends Controller
         $send->save();
         return response()->json(['message'=>'Đã gửi hồ sơ'],200);
     }
-    public function getSendProfile($id){
-        $user=Auth::guard('employer')->user();
-        $data=RecruitmentNews::with('send')->where('employer_id',$user->id)->findOrFail($id);
+    public function profileList($newsid){
+        $user = Auth::guard('employer')->user();
+        // Eager load các quan hệ cần thiết
+        $info=RecruitmentNews::where('id',$newsid)->first();
+        $data = Sending::where('recruitment_news_id',$newsid)->get();
         return response()->json([
-            'news'=>$data->title,
-            'profile'=>$data->send,
-        ]);
+            'title'=>$info->title, // Tiêu đề tin tuyển dụng
+            'send'=>$data,
+        ],200);
+    }
+    //lấy thông tin từng hồ sơ
+    public function getDetailInfo($sendid){
+        $user = Auth::guard('employer')->user();
+        $send=Sending::where('id',$sendid)->first();
+        // Eager load các quan hệ cần thiết
+        $data = Profile::with([
+            'work_ex',
+            'reference',
+            'academy',
+            'languageDetails',
+            'information_Details',
+            'workplaceDetails',
+            'industries',
+        ])->where('id', $send->profile_id)->first();
+        if ($data && $data->image) {
+            $data->image_url = asset('storage/' . $data->image); // Tạo URL từ đường dẫn
+        } else {
+            $data->image_url = null; // Nếu không có hình ảnh, trả về null
+        }
+        return response()->json([
+            'profile' => $data,
+        ],200);
     }
     public function updateStatus(Request $request, $id)
     {
