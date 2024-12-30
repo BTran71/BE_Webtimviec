@@ -33,11 +33,10 @@ class SendController extends Controller
     public function profileList($newsid){
         $user = Auth::guard('employer')->user();
         // Eager load các quan hệ cần thiết
-        $data = Sending::with([
-            'news',
-        ])->where('employer_id', $user->id)->findOrFail($newsid);
+        $info=RecruitmentNews::where('id',$newsid)->first();
+        $data = Sending::where('recruitment_news_id',$newsid)->get();
         return response()->json([
-            'news' => $data->title, // Tiêu đề tin tuyển dụng
+            'title'=>$info->title, // Tiêu đề tin tuyển dụng
             'send'=>$data,
         ],200);
     }
@@ -54,7 +53,7 @@ class SendController extends Controller
             'information_Details',
             'workplaceDetails',
             'industries',
-        ])->where('candidate_id', $send->candidate_id)->first();
+        ])->where('id', $send->profile_id)->first();
         if ($data && $data->image) {
             $data->image_url = asset('storage/' . $data->image); // Tạo URL từ đường dẫn
         } else {
