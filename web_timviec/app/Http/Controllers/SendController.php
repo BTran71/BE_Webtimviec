@@ -98,4 +98,22 @@ class SendController extends Controller
             'interview_date' => $interviewDate,
         ], 200);
     }
+    public function getSendNews(){
+        $user=Auth::guard('candidate')->user();
+        $profile=$user->profile;
+        $send=Sending::where('profile_id',$profile->id)->get();
+        foreach ($send as $item) {
+            $news = RecruitmentNews::where('id', $item->recruitment_news_id)->first();
+            $newsList[] = [
+                'news' => $news ? $news->title : null,
+                'send' => $item,     
+            ];
+        }
+        if(!$send){
+            return response()->json(['message'=>'Chưa gửi hồ sơ'],401);
+        }
+        else{
+            return response()->json($newsList, 200);
+        }
+    }
 }
