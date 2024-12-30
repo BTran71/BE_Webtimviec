@@ -54,7 +54,6 @@ class RecruitmentNews extends Model
                     ->withPivot('senddate', 'status'); // Lấy thêm các cột trong bảng trung gian;
     }
     protected $hidden=[
-        'employer_id',
         'industry_id',
     ];
 }

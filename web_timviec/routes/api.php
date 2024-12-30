@@ -21,6 +21,7 @@ use App\Http\Controllers\RecruitmentNewsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SendController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UpdateNewsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -115,11 +116,26 @@ Route::middleware('role:employer')->group(function () {
     Route::post('employer/getacc',[AdminController::class,'getEmployer']);
     Route::post('/employer/add',[RecruitmentNewsController::class,'addRecruitmentNews']);
     Route::put('/employer/update/{id}',[RecruitmentNewsController::class,'updateNews']);
+    Route::put('/employer/updateIndustry/{industry}',[UpdateNewsController::class,'updateIndustryNews']);
+    Route::put('/employer/updateLanguage/{language}',[UpdateNewsController::class,'updateLanguageNews']);
+    Route::put('/employer/updateIT/{it}',[UpdateNewsController::class,'updateInfoNews']);
+    Route::put('/employer/updateWorkplace/{workplace}',[UpdateNewsController::class,'updateWorkplaceNews']);
     // Route::put('/employer/lock',[ProfileController::class,'changeLock']);
     // Route::put('/employer/update',[ProfileController::class,'updateProfile']);
-    
+    //thêm thông tin tuyển dụng bảng con
+    Route::post('/employer/addIndustry/{newsid}',[UpdateNewsController::class,'addIndustryNews']);
+    Route::post('/employer/addLanguage/{newsid}',[UpdateNewsController::class,'addLanguageNews']);
+    Route::post('/employer/addIT/{newsid}',[UpdateNewsController::class,'addInfoNews']);
+    Route::post('/employer/addWorkplace/{newsid}',[UpdateNewsController::class,'addWorkplaceNews']);
+    //xóa thông tin tuyển dụng bảng con
+    Route::delete('/employer/deleteIndustry/{industry}',[UpdateNewsController::class,'deleteIndustryNews']);
+    Route::delete('/employer/deleteLanguage/{language}',[UpdateNewsController::class,'deleteLanguageNews']);
+    Route::delete('/employer/deleteIT/{it}',[UpdateNewsController::class,'deleteInfoNews']);
+    Route::delete('/employer/deleteWorkplace/{workplace}',[UpdateNewsController::class,'deleteWorkplaceNews']);
+
     //api lấy thông tin hồ sơ
-    Route::get('/employer/getProfile/{id}',[SendController::class,'getSendProfile']);
+    Route::get('/employer/getProfile/{newsid}',[SendController::class,'profileList']);
+    Route::get('/employer/detailProfile/{sendid}',[SendController::class,'getDetailInfo']);
     Route::post('employer/send/{id}',[SendController::class,'updateStatus']);
     
 });
