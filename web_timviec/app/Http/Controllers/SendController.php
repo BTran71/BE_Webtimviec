@@ -63,7 +63,7 @@ class SendController extends Controller
             'profile' => $data,
         ],200);
     }
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(Request $request, $sendid)
     {
         // Validate input
         $request->validate([
@@ -72,7 +72,7 @@ class SendController extends Controller
         ]);
 
         // Find sending details record
-        $sendingDetails = Sending::findOrFail($id);
+        $sendingDetails = Sending::findOrFail($sendid);
 
         // Fetch associated profile
         $profile = Profile::findOrFail($sendingDetails->profile_id);

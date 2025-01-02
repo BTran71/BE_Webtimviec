@@ -13,7 +13,9 @@
         "laravel/tinker": "^2.7",
         "nesbot/carbon": "^2.72",
         "ramsey/uuid": "^4.7",
-        "stripe/stripe-php": "^16.3"
+        "stripe/stripe-php": "^16.3",
+        "symfony/http-client": "^6.4",
+        "symfony/mailgun-mailer": "^6.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
