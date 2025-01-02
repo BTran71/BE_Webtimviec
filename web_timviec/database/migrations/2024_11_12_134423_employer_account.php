@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('image')->nullable();
-            $table->integer('phone_number');
+            $table->string('phone_number');
             $table->string('address');
             $table->text('discription')->nullable();
             $table->tinyInteger('is_Lock')->default(1);

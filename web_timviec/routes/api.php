@@ -195,18 +195,18 @@ Route::middleware('role:candidate')->group(function () {
     //api gửi
     Route::post('/candidate/send/{id}',[SendController::class,'sendProfile']);
 
-    //api lấy thông tin tuyển dụng theo hồ sơ
-    Route::get('candidate/getNews',[RecruitmentNewsController::class,'getMatchingJobs']);
+   
 
     //lấy thông tin các tin tuyển dụng đã gửi
     Route::get('candidate/getSend',[SendController::class,'getSendNews']);
 });
 //api lọc tin
 Route::get('/filter-jobs', [RecruitmentNewsController::class, 'filterJobs']);
-Route::get('/active-recruitments', [RecruitmentNewsController::class, 'showActiveRecruitments']);
 //cổng thanh toán
 Route::post('/payment', [PaymentController::class, 'momocheckout']);
 
 //api lấy tin tuyển dụng
 Route::get('/get/news/{id}',[RecruitmentNewsController::class,'getNews']);
+ //api lấy thông tin tuyển dụng theo hồ sơ
+ Route::get('/getNews',[RecruitmentNewsController::class,'getMatchingJobs']);
 

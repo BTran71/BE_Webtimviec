@@ -16,18 +16,20 @@ class ApplicationStatusMail extends Mailable
     public $jobTitle;
     public $applicantName;
     public $interviewDate;
+    public $companyname;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($status, $jobTitle, $applicantName,$interviewDate=null)
+    public function __construct($status, $jobTitle, $applicantName,$companyname,$interviewDate=null)
     {
         //
         $this->status = $status;
         $this->jobTitle = $jobTitle;
         $this->applicantName = $applicantName;
-        $this->interviewDate=$interviewDate;;
+        $this->companyname=$companyname;
+        $this->interviewDate=$interviewDate;
     }
     public function build()
     {
@@ -37,6 +39,7 @@ class ApplicationStatusMail extends Mailable
                         'status' => $this->status,
                         'jobTitle' => $this->jobTitle,
                         'applicantName' => $this->applicantName,
+                        'companyname'=>$this->companyname,
                         'interviewDate'=>$this->interviewDate,
                     ]);
     }
