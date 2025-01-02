@@ -136,7 +136,7 @@ Route::middleware('role:employer')->group(function () {
     //api lấy thông tin hồ sơ
     Route::get('/employer/getProfile/{newsid}',[SendController::class,'profileList']);
     Route::get('/employer/detailProfile/{sendid}',[SendController::class,'getDetailInfo']);
-    Route::post('employer/send/{id}',[SendController::class,'updateStatus']);
+    Route::post('employer/send/{sendid}',[SendController::class,'updateStatus']);
     
 });
 
