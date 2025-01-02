@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\ApplicationStatusMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 
 
 class SendController extends Controller
@@ -65,6 +66,8 @@ class SendController extends Controller
     }
     public function updateStatus(Request $request, $sendid)
     {
+        $user=Auth::guard('employer')->user();
+        $companyname=$user->company_name;
         // Validate input
         $request->validate([
             'status' => 'required|in:accepted,rejected',
@@ -72,10 +75,10 @@ class SendController extends Controller
         ]);
 
         // Find sending details record
-        $sendingDetails = Sending::findOrFail($sendid);
-
+        $sendingDetails = Sending::where('id',$sendid)->first();
+        $news=RecruitmentNews::where('id',$sendingDetails->recruitment_news_id)->first();
         // Fetch associated profile
-        $profile = Profile::findOrFail($sendingDetails->profile_id);
+        $profile = Profile::where('id',$sendingDetails->profile_id)->first();
 
         // Update the status
         $status = $request->input('status');
@@ -85,17 +88,18 @@ class SendController extends Controller
         // Fetch email details
         $applicantEmail = $profile->email; // Ensure the `email` field exists in the `profiles` table
         $applicantName = $profile->name;  // Ensure the `name` field exists in the `profiles` table
-        $jobTitle = $sendingDetails->news->title; // Assuming `news` relationship exists in `SendingDetails`
+        $jobTitle = $news->title; // Assuming `news` relationship exists in `SendingDetails`
 
         $interviewDate = $status === 'accepted' ? Carbon::parse($request->input('interview_date'))->format('d-m-Y H:i') : null;
         // Send email to the applicant
-        Mail::to($applicantEmail)->send(new ApplicationStatusMail($status, $jobTitle, $applicantName,$interviewDate));
+        Mail::to($applicantEmail)->send(new ApplicationStatusMail($status, $jobTitle, $applicantName,$companyname,$interviewDate));
 
         // Return response
         return response()->json([
             'message' => 'Application status updated and email sent successfully.',
             'status' => $sendingDetails->status,
             'interview_date' => $interviewDate,
+            'company'=>$companyname,
         ], 200);
     }
     public function getSendNews(){

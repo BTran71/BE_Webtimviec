@@ -17,7 +17,7 @@ class Sending extends Model
         'name'
     ];
     public function news(){
-        return $this->belongsToMany(RecruitmentNews::class);
+        return $this->belongsTo(RecruitmentNews::class);
     }
     public function profile(){
         return $this->belongsToMany(Profile::class);

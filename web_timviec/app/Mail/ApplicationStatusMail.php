@@ -33,15 +33,15 @@ class ApplicationStatusMail extends Mailable
     }
     public function build()
     {
-        return $this->subject("Your application status for $this->jobTitle")
-                    ->view('emails.application_status')
-                    ->with([
-                        'status' => $this->status,
-                        'jobTitle' => $this->jobTitle,
-                        'applicantName' => $this->applicantName,
-                        'companyname'=>$this->companyname,
-                        'interviewDate'=>$this->interviewDate,
-                    ]);
+        
+        $subject = 'Application Status Update';
+        $messageContent = $this->status == 'accepted'
+            ? "Dear {$this->applicantName},\n\nWe are pleased to inform you that your application for the position of {$this->jobTitle} has been accepted. Please attend the interview on {$this->interviewDate}.\n\nBest regards, {$this->companyname}"
+            : "Dear {$this->applicantName},\n\nWe regret to inform you that your application for the position of {$this->jobTitle} has been rejected.\n\nBest regards, {$this->companyname}";
+        
+        return $this->subject($subject)
+                ->html($messageContent);  // Use the html() method for sending HTML content
+        
     }
     /**
      * Get the message envelope.
