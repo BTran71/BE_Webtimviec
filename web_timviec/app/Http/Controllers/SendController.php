@@ -19,8 +19,12 @@ class SendController extends Controller
     public function sendProfile(Request $request,$id){
         $user=Auth::guard('candidate')->user();
         $profile=$user->profile;
+        $check=Sending::where('profile_id',$profile->id)->where('recruitment_news_id',$id)->first();
         if(!$user || !$profile){
             return response()->json(['error'=>'Chưa đăng nhập hoặc chưa có hồ sơ'],401);
+        }
+        else if($check){
+            return response()->json(['message'=>'Không thể gửi tin tuyển dụng nữa'],500);
         }
         $date=Carbon::now()->format('Y-m-d H:i:s');
         $send=new Sending();
@@ -64,13 +68,51 @@ class SendController extends Controller
             'profile' => $data,
         ],200);
     }
-    public function updateStatus(Request $request, $sendid)
+    // public function updateStatus(Request $request, $sendid)
+    // {
+    //     $user=Auth::guard('employer')->user();
+    //     $companyname=$user->company_name;
+    //     // Validate input
+    //     $request->validate([
+    //         'status' => 'required|in:accepted,rejected',
+    //         'interview_date' => 'required_if:status,accepted|date|after:now',
+    //     ]);
+
+    //     // Find sending details record
+    //     $sendingDetails = Sending::where('id',$sendid)->first();
+    //     $news=RecruitmentNews::where('id',$sendingDetails->recruitment_news_id)->first();
+    //     // Fetch associated profile
+    //     $profile = Profile::where('id',$sendingDetails->profile_id)->first();
+
+    //     // Update the status
+    //     $status = $request->input('status');
+    //     $sendingDetails->status = $status;
+    //     $sendingDetails->save();
+
+    //     // Fetch email details
+    //     $applicantEmail = $profile->email; // Ensure the `email` field exists in the `profiles` table
+    //     $applicantName = $profile->name;  // Ensure the `name` field exists in the `profiles` table
+    //     $jobTitle = $news->title; // Assuming `news` relationship exists in `SendingDetails`
+
+    //     $interviewDate = $status === 'accepted' ? Carbon::parse($request->input('interview_date'))->format('d-m-Y H:i') : null;
+    //     // Send email to the applicant
+    //     Mail::to($applicantEmail)->send(new ApplicationStatusMail($status, $jobTitle, $applicantName,$companyname,$interviewDate));
+
+    //     // Return response
+    //     return response()->json([
+    //         'message' => 'Application status updated and email sent successfully.',
+    //         'status' => $sendingDetails->status,
+    //         'interview_date' => $interviewDate,
+    //         'company'=>$companyname,
+    //     ], 200);
+    // }
+
+    public function acceptStatus(Request $request, $sendid)
     {
         $user=Auth::guard('employer')->user();
         $companyname=$user->company_name;
         // Validate input
         $request->validate([
-            'status' => 'required|in:accepted,rejected',
             'interview_date' => 'required_if:status,accepted|date|after:now',
         ]);
 
@@ -81,7 +123,7 @@ class SendController extends Controller
         $profile = Profile::where('id',$sendingDetails->profile_id)->first();
 
         // Update the status
-        $status = $request->input('status');
+        $status = 'accepted';
         $sendingDetails->status = $status;
         $sendingDetails->save();
 
@@ -90,7 +132,40 @@ class SendController extends Controller
         $applicantName = $profile->name;  // Ensure the `name` field exists in the `profiles` table
         $jobTitle = $news->title; // Assuming `news` relationship exists in `SendingDetails`
 
-        $interviewDate = $status === 'accepted' ? Carbon::parse($request->input('interview_date'))->format('d-m-Y H:i') : null;
+        $interviewDate = Carbon::parse($request->input('interview_date'))->format('d-m-Y H:i');
+        // Send email to the applicant
+        Mail::to($applicantEmail)->send(new ApplicationStatusMail($status, $jobTitle, $applicantName,$companyname,$interviewDate));
+
+        // Return response
+        return response()->json([
+            'message' => 'Application status updated and email sent successfully.',
+            'status' => $sendingDetails->status,
+            'interview_date' => $interviewDate,
+            'company'=>$companyname,
+        ], 200);
+    }
+    public function rejectedStatus($sendid)
+    {
+        $user=Auth::guard('employer')->user();
+        $companyname=$user->company_name;
+        
+        // Find sending details record
+        $sendingDetails = Sending::where('id',$sendid)->first();
+        $news=RecruitmentNews::where('id',$sendingDetails->recruitment_news_id)->first();
+        // Fetch associated profile
+        $profile = Profile::where('id',$sendingDetails->profile_id)->first();
+
+        // Update the status
+        $status = 'rejected';
+        $sendingDetails->status = $status;
+        $sendingDetails->save();
+
+        // Fetch email details
+        $applicantEmail = $profile->email; // Ensure the `email` field exists in the `profiles` table
+        $applicantName = $profile->name;  // Ensure the `name` field exists in the `profiles` table
+        $jobTitle = $news->title; // Assuming `news` relationship exists in `SendingDetails`
+
+        $interviewDate = null;
         // Send email to the applicant
         Mail::to($applicantEmail)->send(new ApplicationStatusMail($status, $jobTitle, $applicantName,$companyname,$interviewDate));
 

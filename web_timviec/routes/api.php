@@ -136,7 +136,13 @@ Route::middleware('role:employer')->group(function () {
     //api lấy thông tin hồ sơ
     Route::get('/employer/getProfile/{newsid}',[SendController::class,'profileList']);
     Route::get('/employer/detailProfile/{sendid}',[SendController::class,'getDetailInfo']);
-    Route::post('employer/send/{sendid}',[SendController::class,'updateStatus']);
+    // Route::post('employer/send/{sendid}',[SendController::class,'updateStatus']);
+    //đồng ý
+    Route::post('employer/accepted/{sendid}',[SendController::class,'acceptStatus']);
+    //từ chối
+    Route::post('employer/rejected/{sendid}',[SendController::class,'rejectedStatus']);
+    //api khóa tin tuyển dụng
+    Route::put('employer/changeActive/{newsid?}',[RecruitmentNewsController::class,'changeActive']);
     
 });
 

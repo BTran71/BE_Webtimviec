@@ -265,18 +265,18 @@ class AuthController extends Controller
                 Employer::where('id',$id)->where('is_Lock',1)->update([
                     'is_Lock'=> 0
                 ]);
-                return  response()->json(['message','cập nhật trạng thái thành công'],200);
+                return  response()->json(['message'=>'cập nhật trạng thái thành công'],200);
             }
             else{
                 Employer::where('id',$id)->where('is_Lock',0)->update([
                     'is_Lock'=> 1
                 ]);
-                return  response()->json(['message','cập nhật trạng thái thành công'],200);
+                return  response()->json(['message'=>'cập nhật trạng thái thành công'],200);
             }
         }
         else
         {
-            return  response()->json(['message','không thể cập nhật trạng thái'],400);
+            return  response()->json(['message'=>'không thể cập nhật trạng thái'],400);
         }
     }
     public function getAllEmployer(){
