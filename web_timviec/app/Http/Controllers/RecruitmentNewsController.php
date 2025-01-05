@@ -154,6 +154,7 @@ class RecruitmentNewsController extends Controller
                 $query->where('is_Lock', 1);
             })
             ->where('deadline', '>=', Carbon::now())
+            ->where('isActive',1)
             ->where('title', 'like', '%' . $request->title . '%')
             ->get();
         return response()->json([
@@ -191,7 +192,7 @@ class RecruitmentNewsController extends Controller
 
         // Lọc theo hạn nộp đơn (deadline) - chỉ lọc những tin còn hạn         
         $query->where('deadline', '>=', Carbon::now());
-
+        $query->where('isActive',1);
         // Lọc theo workplace_id trong bảng workplacenews
         if ($request->has('workplace_id') && !empty($request->workplace_id)) {
             $query->whereHas('workplacenews', function($query) use ($request) {
@@ -213,7 +214,6 @@ class RecruitmentNewsController extends Controller
     {
         $user = Auth::guard('candidate')->user();
         
-
         if($user){
             $profile = $user->profile;
             if (!$profile) {
@@ -222,6 +222,7 @@ class RecruitmentNewsController extends Controller
             // Lọc tin tuyển dụng phù hợp
             $matchingJobs = RecruitmentNews::query()
                 ->where('deadline', '>=', Carbon::now()) // Chỉ lấy tin còn hạn
+                ->where('isActive',1)
                 ->where(function ($query) use ($profile) {
                     // So khớp theo mức lương
                     $query->where('salary', '>=', $profile->salary)
@@ -310,6 +311,7 @@ class RecruitmentNewsController extends Controller
     {
         $allJobs = RecruitmentNews::with('employer')
             ->where('deadline', '>=', Carbon::now())
+            ->where('isActive',1)
             ->whereHas('employer', function ($query) {
                 $query->where('is_Lock', 1);
             })
@@ -378,5 +380,35 @@ class RecruitmentNewsController extends Controller
         }
         else
             return response()->json(['error' => 'Lỗi'], 500);
+    }
+    public function changeActive($newsid=null){
+        $user=Auth::guard('employer')->user();
+        $now = Carbon::now();
+        // Dò qua tất cả các bản ghi và cập nhật
+        if($newsid==null){
+            RecruitmentNews::where('deadline', '<', $now)
+                ->update(['isActive' => 0]);
+            return response()->json(['message'=>'Đã cập nhật thành công'],200);
+        }
+        if($user && $newsid)
+        {
+            $news=RecruitmentNews::where('id',$newsid)->first();
+            if($news->isActive==1){
+                RecruitmentNews::where('id',$newsid)->where('isActive',1)->update([
+                    'isActive'=> 0
+                ]);
+                return  response()->json(['message'=>'cập nhật trạng thái thành công'],200);
+            }
+            else{
+                RecruitmentNews::where('id',$newsid)->where('isActive',0)->update([
+                    'isActive'=> 1
+                ]);
+                return  response()->json(['message'=>'cập nhật trạng thái thành công'],200);
+            }
+        }
+        else
+        {
+            return  response()->json(['message'=>'Không thể cập nhật trạng thái'],400);
+        }
     }
 }
