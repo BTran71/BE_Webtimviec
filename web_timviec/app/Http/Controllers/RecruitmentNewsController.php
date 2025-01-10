@@ -23,6 +23,8 @@ use App\Models\InfoNews;
 use App\Models\LanguageNews;
 use App\Models\IndustryNews;
 use App\Mail\ApplicationStatusMail;
+use App\Models\Sending;
+use App\Models\Profile;
 
 
 class RecruitmentNewsController extends Controller
@@ -410,5 +412,70 @@ class RecruitmentNewsController extends Controller
         {
             return  response()->json(['message'=>'Không thể cập nhật trạng thái'],400);
         }
+    }
+    public function sortProfile($newsid){
+        $send=Sending::where('recruitment_news_id',$newsid)->get();
+        $news=RecruitmentNews::with(['workplacenews','industry','language','information'])->where('id',$newsid)->first();
+       
+        $matching = $send->map(function ($sending) use ($news) {
+            $profile = Profile::whereIn('id', $sending->pluck('profile_id'))
+            ->with(['workplaceDetails', 'industries', 'languageDetails', 'information_Details','academy'])
+            ->first();
+            $matchCount = 0;
+                    
+            // So khớp theo mức lương
+            if ($profile->salary >= $news->salary) {
+                $matchCount++;
+            } 
+            //so sánh academy
+            if($profile->academy!=null){
+                foreach($profile->academy as $academies){
+                    if (str_contains($academies->degree, $news->qualifications)) {
+                        $matchCount++;
+                        break;
+                    }
+                }
+            }
+            // So khớp theo nơi làm việc
+            if ($profile->workingmodel == $news->workingmodel) {
+                $matchCount++;
+            }
+            // So khớp theo cấp bậc
+            if ($profile->rank == $news->rank) {
+                $matchCount++;
+            }
+            // So khớp theo nơi làm việc
+            if ($profile->workplaceDetails->pluck('workplace_id')->intersect($news->workplacenews->pluck('workplace_id'))->isNotEmpty()) {
+                $matchCount+=$news->workplacenews->sum('score')?:1;
+            }
+    
+            // So khớp theo ngành nghề
+            if ($profile->industries->pluck('industry_id')->intersect($news->industry->pluck('industry_id'))->isNotEmpty()) {
+                $profileExperience = $profile->industries->pluck('experience')->map(function ($experience) {
+                    // Loại bỏ chữ và chuyển chuỗi thành số
+                    return (int) filter_var($experience, FILTER_SANITIZE_NUMBER_INT);
+                });
+                $newsExperience = $news->industry->pluck('experience')->map(function ($experience) {
+                    // Loại bỏ chữ và chuyển chuỗi thành số
+                    return (int) filter_var($experience, FILTER_SANITIZE_NUMBER_INT);
+                });
+                if ($profileExperience->max() >= $newsExperience->min()) {
+                    $matchCount += $news->industry->sum('score') ?: 1;
+                }
+            }
+            if ($profile->languageDetails->pluck('language_id')->intersect($news->language->pluck('language_id'))->isNotEmpty()) {
+                $matchCount+=$news->language->sum('score')?:1;
+            }
+            if ($profile->information_Details->pluck('it_id')->intersect($news->information->pluck('it_id'))->isNotEmpty()) {
+                $matchCount+=$news->information->sum('score')?:1;
+            }
+           // Gắn match_count vào Sending
+            $sending->match_count = $matchCount;
+            return $sending;
+        });
+                // Sắp xếp theo số lượng khớp từ cao xuống thấp
+        $sort = $matching->sortByDesc('match_count');
+            // Trả về kết quả dưới dạng JSON     
+        return response()->json($sort->values(), 200);
     }
 }

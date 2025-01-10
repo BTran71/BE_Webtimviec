@@ -49,6 +49,8 @@ class UpdateNewsController extends Controller
             $details=new IndustryNews();
             $details->recruitment_news_id=$newsid;
             $details->industry_id=$data['industry_id'];
+            $details->score=$data['score'];
+            $details->experience=$data['experience'];
             $details->save();
             return response()->json(['message'=>'Thêm thành công'],200);
         }
@@ -64,6 +66,8 @@ class UpdateNewsController extends Controller
         }
         else{
             $info->industry_id=$data['industry_id'];
+            $info->score=$data['score'];
+            $info->experience=$data['experience'];
             $info->save();
             return response()->json(['message'=>'Sửa thành công'],200);
         }
@@ -109,6 +113,7 @@ class UpdateNewsController extends Controller
             $details=new LanguageNews();
             $details->recruitment_news_id=$newsid;
             $details->language_id=$data['language_id'];
+            $details->score=$data['score'];
             $details->save();
             return response()->json(['message'=>'Thêm thành công'],200);
         }
@@ -124,6 +129,7 @@ class UpdateNewsController extends Controller
         }
         else{
             $info->language_id=$data['language_id'];
+            $details->score=$data['score'];
             $info->save();
             return response()->json(['message'=>'Sửa thành công'],200);
         }
@@ -166,6 +172,7 @@ class UpdateNewsController extends Controller
             $details->recruitment_news_id=$newsid;
             $details->workplace_id=$data['workplace_id'];
             $details->homeaddress=$data['homeaddress'];
+            $details->score=$data['score'];
             $details->save();
             return response()->json(['message'=>'Thêm thành công'],200);
         }
@@ -182,6 +189,7 @@ class UpdateNewsController extends Controller
         else{
             $info->workplace_id=$data['workplace_id'];
             $info->homeaddress=$data['homeaddress'];
+            $details->score=$data['score'];
             $info->save();
             return response()->json(['message'=>'Sửa thành công'],200);
         }
@@ -227,6 +235,7 @@ class UpdateNewsController extends Controller
             $details=new InfoNews();
             $details->recruitment_news_id=$newsid;
             $details->it_id=$data['it_id'];
+            $details->score=$data['score'];
             $details->save();
             return response()->json(['message'=>'Thêm thành công'],200);
         }
@@ -242,6 +251,7 @@ class UpdateNewsController extends Controller
         }
         else{
             $info->it_id=$data['it_id'];
+            $details->score=$data['score'];
             $info->save();
             return response()->json(['message'=>'Sửa thành công'],200);
         }

@@ -11,7 +11,8 @@ class Industry_Profile extends Model
     protected $table='industry_profile';
     protected $fillable=[
         'profile_id',
-        'industry_id'
+        'industry_id',
+        'experience'
     ];
     public function profile()
     {

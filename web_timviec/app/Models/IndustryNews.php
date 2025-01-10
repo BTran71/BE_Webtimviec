@@ -12,6 +12,8 @@ class IndustryNews extends Model
     protected $fillable=[
         'industry_id', 
         'recruitment_news_id',
+        'score',
+        'experience',
     ];
     // protected $hidden=['profile_id','language_id',];
     public function news()
