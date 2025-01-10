@@ -12,6 +12,7 @@ class InfoNews extends Model
     protected $fillable=[
         'it_id', 
         'recruitment_news_id',
+        'score',
     ];
     // protected $hidden=['profile_id','language_id',];
     public function news()

@@ -22,6 +22,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SendController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UpdateNewsController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -137,6 +138,9 @@ Route::middleware('role:employer')->group(function () {
     Route::get('/employer/getProfile/{newsid}',[SendController::class,'profileList']);
     Route::get('/employer/detailProfile/{sendid}',[SendController::class,'getDetailInfo']);
     // Route::post('employer/send/{sendid}',[SendController::class,'updateStatus']);
+    //match hồ sơ điểm cao
+    Route::get('/employer/listProfile/{newsid}',[RecruitmentNewsController::class,'sortProfile']);
+    
     //đồng ý
     Route::post('employer/accepted/{sendid}',[SendController::class,'acceptStatus']);
     //từ chối
@@ -201,10 +205,12 @@ Route::middleware('role:candidate')->group(function () {
     //api gửi
     Route::post('/candidate/send/{id}',[SendController::class,'sendProfile']);
 
-   
-
     //lấy thông tin các tin tuyển dụng đã gửi
     Route::get('candidate/getSend',[SendController::class,'getSendNews']);
+
+    //báo cáo tin tuyển dụng
+    Route::post('candidate/reportsend/{sendid}',[ReportController::class,'addReport']);
+    Route::post('candidate/reportnews/{newsid}',[ReportController::class,'createReport']);
 });
 //api lọc tin
 Route::get('/filter-jobs', [RecruitmentNewsController::class, 'filterJobs']);
@@ -215,4 +221,7 @@ Route::post('/payment', [PaymentController::class, 'momocheckout']);
 Route::get('/get/news/{id}',[RecruitmentNewsController::class,'getNews']);
  //api lấy thông tin tuyển dụng theo hồ sơ
  Route::get('/getNews',[RecruitmentNewsController::class,'getMatchingJobs']);
+
+//api lấy các báo cáo
+Route::get('get/report',[ReportController::class,'getAllReport']);
 

@@ -32,6 +32,7 @@ class IndustryDetailsController extends Controller
             $info=new Industry_Profile();
             $info->profile_id=$profile->id;
             $info->industry_id=$data['industry_id'];
+            $info->experience=$data['experience'];
             $info->save();
             return response()->json(['message' => 'Thêm nơi thông tin thành công'], 200);
         }
@@ -60,6 +61,7 @@ class IndustryDetailsController extends Controller
         $info=Industry_Profile::where('id',$id)->where('profile_id',$profile->id)->first();
         if($profile && $industry){
             $info->industry_id=$data['industry_id'];
+            $info->experience=$data['experience'];
             $info->save();
             return response()->json(['message' => 'Cập nhật thông tin thành công'], 200);
         }

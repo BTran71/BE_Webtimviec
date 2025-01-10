@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('language_id');
             $table->foreign('recruitment_news_id')->references('id')->on('recruitment_news')->onDelete('cascade');
             $table->foreign('language_id')->references('id')->on('language')->onDelete('cascade');
+            $table->integer('score')->nullable();
             $table->timestamps();
             $table->unique(['recruitment_news_id', 'language_id']);
         });

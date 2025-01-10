@@ -13,6 +13,7 @@ class WorkplaceNews extends Model
         'workplace_id', 
         'recruitment_news_id',
         'homeaddress',
+        'score'
     ];
     // protected $hidden=['profile_id','language_id',];
     public function news()

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->unsignedBigInteger('industry_id');
             $table->foreign('recruitment_news_id')->references('id')->on('recruitment_news')->onDelete('cascade');
             $table->foreign('industry_id')->references('id')->on('industry')->onDelete('cascade');
+            $table->integer('score')->nullable();
+            $table->string('experience');
             $table->timestamps();
             $table->unique(['recruitment_news_id', 'industry_id']);
         });

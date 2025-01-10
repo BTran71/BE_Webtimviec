@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('recruitment_news_id'); 
             $table->foreign('recruitment_news_id')->references('id')->on('recruitment_news')->onDelete('cascade');
             $table->string('homeaddress');
+            $table->integer('score')->nullable();
             $table->timestamps();
         });
     }
