@@ -65,13 +65,16 @@ class ReportController extends Controller
             $reportDetails = ReportDetails::where('report_id',$report->id)->first();
             if ($reportDetails) { // Kiểm tra nếu $reportDetails không phải null
                 $send = Sending::where('id', $reportDetails->sending_details_id)->first();
+                $news=RecruitmentNews::where('id',$send->recruitment_news_id)->first();
             } else {
-                $send = null; // Xử lý trường hợp không tìm thấy reportDetails
+                $send = null;
+                $news=null; // Xử lý trường hợp không tìm thấy reportDetails
             }
 
             return [
                 'report' => $report,
                 'send' => $send,
+                'news'=>$news,
             ];
         });
         return response()->json(['data' => $results], 200);

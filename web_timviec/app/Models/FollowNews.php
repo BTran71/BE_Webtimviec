@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Follow extends Model
+class FollowNews extends Model
 {
     use HasFactory;
-    protected $table = 'follow';
+    protected $table = 'follownews';
 
-    public function employer()
+    public function news()
     {
-        return $this->belongsTo(Employer::class);
+        return $this->belongsTo(RecruitmentNews::class);
     }
     
     public function candidate()
@@ -20,12 +20,8 @@ class Follow extends Model
         return $this->belongsTo(Candidate::class);
     }
     protected $fillable=[
-        'employer_id',
+        'recruitment_news_id',
         'candidate_id',
         'status'
     ];
-    // protected $hidden=[
-    //     'employerid',
-    //     'candidateid',
-    // ];
 }

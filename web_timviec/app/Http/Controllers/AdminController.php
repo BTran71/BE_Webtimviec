@@ -33,7 +33,9 @@ class AdminController extends Controller
         $imagePath = null;
         $user->email=$data['email'];
         $user->name=$data['name'];
-        $user->password=Hash::make($data['password']);
+        if (!empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
         if ($request->hasFile('image')) {
             // Lấy đường dẫn của ảnh cũ
             $oldImagePath = $user->image;
@@ -68,7 +70,9 @@ class AdminController extends Controller
         ]);
         $user->email=$data['email'];
         $user->name=$data['name'];
-        $user->password=Hash::make($data['password']);
+        if (!empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
         $user->save();
         return response()->json(['message'=>'Sửa thành công'],200);
     }
@@ -94,7 +98,9 @@ class AdminController extends Controller
         $imagePath = null;
         $user->email=$data['email'];
         $user->company_name=$data['company_name'];
-        $user->password=Hash::make($data['password']);
+        if (!empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
         $user->phone_number=$data['phone_number'];
         $user->address=$data['address'];
         $user->company_size=$data['company_size'];
