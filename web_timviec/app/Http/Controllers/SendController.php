@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Mail\ApplicationStatusMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
+use App\Mail\EmployerToCandidate;
+use App\Mail\CandidateToEmployer;
 
 
 class SendController extends Controller
@@ -194,5 +196,45 @@ class SendController extends Controller
         else{
             return response()->json($newsList, 200);
         }
+    }
+
+    public function sendEmailToCandidate(Request $request)
+    {
+        $user=Auth::guard('employer')->user();
+
+        $request->validate([
+            'email' => 'required|email',
+            'message' => 'required|string',
+        ]);
+
+        $email = $request->input('email');
+        $employername = $user->company_name;
+        $employerEmail=$user->email;
+        $message = $request->input('message');
+
+        // Gửi email
+        Mail::to($email)->send(new EmployerToCandidate($employername, $message,$employerEmail));
+
+        return response()->json(['message' => 'Email sent successfully!'], 200);
+    }
+
+    public function sendEmailToEmployer(Request $request)
+    {
+        $user=Auth::guard('candidate')->user();
+        $profile=$user->profile;
+        $request->validate([
+            'email' => 'required|email',
+            'message' => 'required|string',
+        ]);
+
+        $email = $request->input('email');
+        $candidatename = $profile->fullname;
+        $candidateEmail=$profile->email;
+        $message = $request->input('message');
+
+        // Gửi email
+        Mail::to($email)->send(new CandidateToEmployer($candidatename,$message,$candidateEmail));
+
+        return response()->json(['message' => 'Email sent successfully!'], 200);
     }
 }

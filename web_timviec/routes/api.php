@@ -23,6 +23,7 @@ use App\Http\Controllers\SendController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UpdateNewsController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\FollowController;
 
 /*
 |--------------------------------------------------------------------------
@@ -147,6 +148,8 @@ Route::middleware('role:employer')->group(function () {
     Route::post('employer/rejected/{sendid}',[SendController::class,'rejectedStatus']);
     //api khóa tin tuyển dụng
     Route::put('employer/changeActive/{newsid?}',[RecruitmentNewsController::class,'changeActive']);
+
+    Route::post('employer/sendEmail',[SendController::class,'sendEmailToCandidate']);
     
 });
 
@@ -211,6 +214,26 @@ Route::middleware('role:candidate')->group(function () {
     //báo cáo tin tuyển dụng
     Route::post('candidate/reportsend/{sendid}',[ReportController::class,'addReport']);
     Route::post('candidate/reportnews/{newsid}',[ReportController::class,'createReport']);
+
+    //gửi email cho nhà tuyển dụng
+    Route::post('candidate/sendEmail',[SendController::class,'sendEmailToEmployer']);
+
+    //theo dõi
+    Route::post('candidate/follow/{employer_id}',[FollowController::class,'addFollow']);
+    //lấy ds theo dõi
+    Route::get('candidate/getFollow',[FollowController::class,'followList']);
+
+    //đổi trạng thái thay đổi
+    Route::put('candidate/changeFollow/{employer_id}',[FollowController::class,'changeFollow']);
+
+    //theo doix tin tuyen dung
+    Route::post('candidate/follownews/{newsid}',[FollowController::class,'addFollowNews']);
+    //lấy ds tin theo dõi
+    Route::get('candidate/getFollowNews',[FollowController::class,'followNewsList']);
+
+    //theo đổi trạng thái follow tin tuyển dụng
+    Route::put('candidate/changeFollowNews/{newsid}',[FollowController::class,'changeFollowNews']);
+
 });
 //api lọc tin
 Route::get('/filter-jobs', [RecruitmentNewsController::class, 'filterJobs']);
@@ -224,4 +247,6 @@ Route::get('/get/news/{id}',[RecruitmentNewsController::class,'getNews']);
 
 //api lấy các báo cáo
 Route::get('get/report',[ReportController::class,'getAllReport']);
+
+Route::get('get/topFollow',[FollowController::class,'getFollow']);
 
