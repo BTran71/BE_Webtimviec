@@ -222,48 +222,22 @@ class RecruitmentNewsController extends Controller
                 return $this->getAllJobs();
             }
             // Lọc tin tuyển dụng phù hợp
-            $matchingJobs = RecruitmentNews::query()
+            $matchingJobs = RecruitmentNews::with(['workplacenews','industry','language','information','employer'])
                 ->where('deadline', '>=', Carbon::now()) // Chỉ lấy tin còn hạn
                 ->where('isActive',1)
-                ->where(function ($query) use ($profile) {
-                    // So khớp theo mức lương
-                    $query->where('salary', '>=', $profile->salary)
-                        ->orWhere('experience', '<=', $profile->experience)
-                        ->orWhere('workingmodel', $profile->workingmodel)
-                        ->orWhere('rank', $profile->rank)
-                        ->orWhere('skills', $profile->skills)
-                        ->orWhereHas('workplacenews', function ($subQuery) use ($profile) {
-                            $subQuery->whereIn('workplace_id', $profile->workplaceDetails->pluck('workplace_id'));
-                        })
-                        ->orWhereHas('industry', function ($subQuery) use ($profile) {
-                            $subQuery->whereIn('industry_id', $profile->industries->pluck('industry_id'));
-                        })
-                        ->orWhereHas('language', function ($subQuery) use ($profile) {
-                            $subQuery->whereIn('language_id', $profile->languageDetails->pluck('language_id'));
-                        })
-                        ->orWhereHas('information', function ($subQuery) use ($profile) {
-                            $subQuery->whereIn('it_id', $profile->information_Details->pluck('it_id'));
-                        });
-                        
-                })
                 // Lọc thêm các tin tuyển dụng của nhà tuyển dụng không bị khóa
                 ->whereHas('employer', function ($query) {
                     $query->where('is_Lock', 1);  // Kiểm tra nhà tuyển dụng không bị khóa
                 })
                 ->get();
-
             // Tính số lượng khớp cho mỗi tin tuyển dụng
-            $matchingJobs = $matchingJobs->map(function ($job) use ($profile) {
+            $matchingJobs = $matchingJobs->map(function ($job) use ($profile){
                 $matchCount = 0;
                 
                 // So khớp theo mức lương
                 if ($job->salary >= $profile->salary) {
                     $matchCount++;
                 } 
-                // So khớp theo kinh nghiệm
-                if ($job->experience <= $profile->experience) {
-                    $matchCount++;
-                }
                 // So khớp theo nơi làm việc
                 if ($job->workingmodel == $profile->workingmodel) {
                     $matchCount++;
@@ -272,25 +246,31 @@ class RecruitmentNewsController extends Controller
                 if ($job->rank == $profile->rank) {
                     $matchCount++;
                 }
-                // So khớp theo kỹ năng
-                if ($job->skills == $profile->skills) {
-                    $matchCount++;
-                }
-
                 // So khớp theo nơi làm việc
                 if ($job->workplacenews->pluck('workplace_id')->intersect($profile->workplaceDetails->pluck('workplace_id'))->isNotEmpty()) {
-                    $matchCount++;
+                    $matchCount+=$profile->workplaceDetails->sum('score')?:1;
                 }
 
                 // So khớp theo ngành nghề
                 if ($job->industry->pluck('industry_id')->intersect($profile->industries->pluck('industry_id'))->isNotEmpty()) {
-                    $matchCount++;
+                    
+                    $profileExperience = $profile->industries->pluck('experience')->map(function ($experience) {
+                        // Loại bỏ chữ và chuyển chuỗi thành số
+                        return (int) filter_var($experience, FILTER_SANITIZE_NUMBER_INT);
+                    });
+                    $newsExperience = $job->industry->pluck('experience')->map(function ($experience) {
+                        // Loại bỏ chữ và chuyển chuỗi thành số
+                        return (int) filter_var($experience, FILTER_SANITIZE_NUMBER_INT);
+                    });
+                    if ($profileExperience->max() >= $newsExperience->min()) {
+                        $matchCount+=$profile->industries->sum('score')?:1;
+                    }
                 }
                 if ($job->language->pluck('language_id')->intersect($profile->languageDetails->pluck('language_id'))->isNotEmpty()) {
-                    $matchCount++;
+                    $matchCount+=$profile->languageDetails->sum('score')?:1;
                 }
                 if ($job->information->pluck('it_id')->intersect($profile->information_Details->pluck('it_id'))->isNotEmpty()) {
-                    $matchCount++;
+                    $matchCount+=$profile->information_Details->sum('score')?:1;
                 }
                 $job->match_count = $matchCount; 
                

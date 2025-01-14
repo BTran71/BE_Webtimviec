@@ -11,7 +11,8 @@ class InfoDetails extends Model
     protected $table='technology_details';
     protected $fillable=[
         'profile_id',
-        'it_id'
+        'it_id',
+        'score'
     ];
     // protected $hidden=['profile_id','it_id'];
     public function profile()

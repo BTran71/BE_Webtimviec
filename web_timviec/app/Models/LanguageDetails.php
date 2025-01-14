@@ -13,6 +13,7 @@ class LanguageDetails extends Model
         'profile_id',
         'language_id',
         'level',
+        'score'
     ];
     // protected $hidden=['profile_id','language_id',];
     public function profile()

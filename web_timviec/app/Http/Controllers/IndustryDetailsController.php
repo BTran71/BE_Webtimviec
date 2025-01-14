@@ -33,6 +33,7 @@ class IndustryDetailsController extends Controller
             $info->profile_id=$profile->id;
             $info->industry_id=$data['industry_id'];
             $info->experience=$data['experience'];
+            $info->score=$data['score'];
             $info->save();
             return response()->json(['message' => 'Thêm nơi thông tin thành công'], 200);
         }
@@ -62,6 +63,7 @@ class IndustryDetailsController extends Controller
         if($profile && $industry){
             $info->industry_id=$data['industry_id'];
             $info->experience=$data['experience'];
+            $info->score=$data['score'];
             $info->save();
             return response()->json(['message' => 'Cập nhật thông tin thành công'], 200);
         }

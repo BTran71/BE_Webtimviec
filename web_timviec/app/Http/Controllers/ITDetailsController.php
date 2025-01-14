@@ -32,6 +32,7 @@ class ITDetailsController extends Controller
             $info=new InfoDetails();
             $info->profile_id=$profile->id;
             $info->it_id=$data['it_id'];
+            $info->score=$data['score'];
             $info->save();
             return response()->json(['message' => 'Thêm nơi thông tin thành công'], 200);
         }
@@ -60,6 +61,7 @@ class ITDetailsController extends Controller
         $info=InfoDetails::where('id',$id)->where('profile_id',$profile->id)->first();
         if($profile && $it){
             $info->it_id=$data['it_id'];
+            $info->score=$data['score'];
             $info->save();
             return response()->json(['message' => 'Cập nhật thông tin thành công'], 200);
         }
