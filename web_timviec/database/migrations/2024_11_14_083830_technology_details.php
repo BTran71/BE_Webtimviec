@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('it_id');
             $table->foreign('profile_id')->references('id')->on('profile')->onDelete('cascade');
             $table->foreign('it_id')->references('id')->on('information_technology')->onDelete('cascade');
+            $table->integer('score')->nullable();
             $table->timestamps();
         });
     }

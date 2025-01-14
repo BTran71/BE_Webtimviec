@@ -13,7 +13,7 @@ use App\Models\Candidate;
 
 class AuthController extends Controller
 {
-    //gửi mail nhà tuyển dụng
+    //gửi mail reset password nhà tuyển dụng
     public function sendMailEmployer(Request $request)
     {
         $user = Employer::where('email', $request->email)->firstOrFail();

@@ -32,6 +32,7 @@ class WorkplaceDetailsController extends Controller
             $details=new Workplace_Profile();
             $details->profile_id=$profile->id;
             $details->workplace_id=$data['workplace_id'];
+            $details->score=$data['score'];
             $details->save();
             return response()->json(['message' => 'Thêm thông tin thành công'], 200);
         }
@@ -60,6 +61,7 @@ class WorkplaceDetailsController extends Controller
         $info=Workplace::find($data['workplace_id']);
         if($profile && $info){
             $details->workplace_id=$data['workplace_id'];
+            $details->score=$data['score'];
             $details->save();
             return response()->json(['message' => 'Cập nhật thông tin thành công'], 200);
         }

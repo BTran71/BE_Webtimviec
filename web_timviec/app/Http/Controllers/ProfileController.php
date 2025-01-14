@@ -19,6 +19,7 @@ use App\Models\InfoDetails;
 use App\Models\Workplace;
 use App\Models\Industry;
 use App\Models\Language;
+use App\Models\RecruitmentNews;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
@@ -308,4 +309,106 @@ class ProfileController extends Controller
             return  response()->json(['message'=>'Không thể cập nhật trạng thái'],400);
         }
     }
+
+    //hiện các hồ sơ theo điểm
+    public function getMatchingProfile(){
+        $user=Auth::guard('employer')->user();
+        if(!$user){
+            return response()->json(['message'=>'Chưa đăng nhập'],401);
+        }
+            // Lấy tất cả các tin tuyển dụng từ nhà tuyển dụng không bị khóa
+        $news = RecruitmentNews::with(['workplacenews', 'industry', 'language', 'information', 'employer'])
+                    ->whereHas('employer', function ($query) {
+                        $query->where('is_Lock', 1); // Nhà tuyển dụng không bị khóa
+                    })
+                    ->where('deadline', '>=', Carbon::now()) // Chỉ lấy tin còn hạn
+                    ->where('isActive', 1) // Tin phải đang hoạt động
+                    ->where('employer_id',$user->id)
+                    ->get();
+        $profiles = Profile::with(['workplaceDetails', 'industries', 'languageDetails', 'information_Details'])
+                    ->where('isLock', 1) // Chỉ lấy profile đang hoạt động
+                    ->get();            
+    // Lọc các tin tuyển dụng theo tiêu chí profile
+        $matchingProfiles = $profiles->filter(function ($profiles) use ($news) {
+            foreach ($news as $job) {
+                $count = 0;
+
+                // So khớp các tiêu chí
+                if ($job->salary >= $profiles->salary) {
+                    $count++;
+                }
+                if ($job->workingmodel == $profiles->workingmodel) {
+                    $count++;
+                }
+                if ($job->rank == $profiles->rank) {
+                    $count++;
+                }
+                if ($job->workplacenews->pluck('workplace_id')->intersect($profiles->workplaceDetails->pluck('workplace_id'))->isNotEmpty()) {
+                    $count++;
+                }
+                if ($job->industry->pluck('industry_id')->intersect($profiles->industries->pluck('industry_id'))->isNotEmpty()) {
+                    $profileExperience = $profiles->industries->pluck('experience')->map(function ($experience) {
+                        // Loại bỏ chữ và chuyển chuỗi thành số
+                        return (int) filter_var($experience, FILTER_SANITIZE_NUMBER_INT);
+                    });
+                    $newsExperience = $job->industry->pluck('experience')->map(function ($experience) {
+                        // Loại bỏ chữ và chuyển chuỗi thành số
+                        return (int) filter_var($experience, FILTER_SANITIZE_NUMBER_INT);
+                    });
+                    if ($profileExperience->max() >= $newsExperience->min()) {
+                        $count++;
+                    }
+
+                }
+                if ($job->language->pluck('language_id')->intersect($profiles->languageDetails->pluck('language_id'))->isNotEmpty()) {
+                    $count++;
+                }
+                if ($job->information->pluck('it_id')->intersect($profiles->information_Details->pluck('it_id'))->isNotEmpty()) {
+                    $count++;
+                }
+                // Nếu có ít nhất 1 tiêu chí khớp thì thêm vào danh sách
+            if ($count > 0) {
+                return true;
+            }
+        }
+        return false; // Không có profile nào khớp
+    });
+     // Tính điểm khớp và sắp xếp danh sách hồ sơ
+     $list = $matchingProfiles->map(function ($profile) use ($news) {
+        $profile->match_count = 0;
+
+        foreach ($news as $job) {
+            $matchCount = 0;
+
+            if ($job->salary >= $profile->salary) $matchCount++;
+            if ($job->workingmodel == $profile->workingmodel) $matchCount++;
+            if ($job->rank == $profile->rank) $matchCount++;
+            if ($job->workplacenews->pluck('workplace_id')->intersect($profile->workplaceDetails->pluck('workplace_id'))->isNotEmpty()) 
+                $matchCount+=$job->workplacenews->sum('score')?:1;
+            if ($job->industry->pluck('industry_id')->intersect($profile->industries->pluck('industry_id'))->isNotEmpty()){
+                $profileExperience = $profile->industries->pluck('experience')->map(function ($experience) {
+                    // Loại bỏ chữ và chuyển chuỗi thành số
+                    return (int) filter_var($experience, FILTER_SANITIZE_NUMBER_INT);
+                });
+                $newsExperience = $job->industry->pluck('experience')->map(function ($experience) {
+                    // Loại bỏ chữ và chuyển chuỗi thành số
+                    return (int) filter_var($experience, FILTER_SANITIZE_NUMBER_INT);
+                });
+                if ($profileExperience->max() >= $newsExperience->min()) {
+                    $matchCount += $job->industry->sum('score') ?: 1;
+                }
+            }
+            if ($job->language->pluck('language_id')->intersect($profile->languageDetails->pluck('language_id'))->isNotEmpty())
+                $matchCount+=$job->language->sum('score')?:1;
+            if ($job->information->pluck('it_id')->intersect($profile->information_Details->pluck('it_id'))->isNotEmpty()) 
+                $matchCount+=$job->information->sum('score')?:1;
+
+            $profile->match_count += $matchCount;
+        }
+        $profile->image_url = $profile->image? asset('storage/' . $profile->image) : null;
+        return $profile;
+    })->sortByDesc('match_count');
+        return response()->json($list, 200);
+    }
+    
 }

@@ -150,7 +150,9 @@ Route::middleware('role:employer')->group(function () {
     Route::put('employer/changeActive/{newsid?}',[RecruitmentNewsController::class,'changeActive']);
 
     Route::post('employer/sendEmail',[SendController::class,'sendEmailToCandidate']);
-    
+
+    //gơi ý các hồ sơ cho nhà tuyển dụng
+    Route::get('employer/matchProfile',[ProfileController::class,'getMatchingProfile']);
 });
 
 Route::middleware('role:candidate')->group(function () {

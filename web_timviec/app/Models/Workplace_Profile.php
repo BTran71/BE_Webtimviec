@@ -11,7 +11,8 @@ class Workplace_Profile extends Model
     protected $table='workspace_profile';
     protected $fillable=[
         'profile_id',
-        'workplace_id'
+        'workplace_id',
+        'score'
     ];
     // protected $hidden=['profile_id','workplace_id'];
     public function profile()

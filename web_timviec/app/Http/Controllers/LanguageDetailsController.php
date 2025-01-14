@@ -36,6 +36,7 @@ class LanguageDetailsController extends Controller
             $details->language_id=$data['language_id'];
             $details->level=$data['level'];
             $details->profile_id=$profile->id;
+            $details->score=$data['score'];
             $details->save();
             return response()->json(['message'=>'Thêm thành công'],200);
         }
@@ -48,6 +49,7 @@ class LanguageDetailsController extends Controller
         if($info && $language){
             $info->language_id=$request->language_id;
             $info->level=$request->level;
+            $info->score=$data['score'];
             $info->save();
             return response()->json(['message'=>'Cập nhật thông tin thành công'],200);
         }

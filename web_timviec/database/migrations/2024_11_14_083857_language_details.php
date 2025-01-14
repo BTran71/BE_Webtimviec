@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreign('profile_id')->references('id')->on('profile')->onDelete('cascade');
             $table->foreign('language_id')->references('id')->on('language')->onDelete('cascade');
             $table->string('level');
+            $table->integer('score')->nullable();
             $table->timestamps();
             $table->unique(['profile_id', 'language_id']);
         });

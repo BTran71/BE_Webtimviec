@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreign('profile_id')->references('id')->on('profile')->onDelete('cascade');
             $table->foreign('workplace_id')->references('id')->on('workplace')->onDelete('cascade');
             $table->timestamps();
+            $table->integer('score')->nullable();
             $table->unique(['profile_id', 'workplace_id']);
         });
     }
